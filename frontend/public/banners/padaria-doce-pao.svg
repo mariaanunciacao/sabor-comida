@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-label="Padaria Doce Pão banner">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="100%" stop-color="#fdba74"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="520" fill="url(#g)"/>
+  <circle cx="980" cy="110" r="120" fill="#fff" opacity="0.35"/>
+  <circle cx="1040" cy="170" r="80" fill="#fff" opacity="0.22"/>
+  <path d="M120 390c120-120 250-120 380 0" fill="none" stroke="#f97316" stroke-width="22" stroke-linecap="round" opacity="0.35"/>
+  <text x="90" y="150" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#9a3412">Padaria Doce Pão</text>
+  <text x="90" y="210" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#7c2d12">Pães, bolos e café passado na hora</text>
+</svg>

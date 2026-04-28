@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-label="Churrascaria do Joelso banner">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fef2f2"/>
+      <stop offset="100%" stop-color="#fca5a5"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="520" fill="url(#g)"/>
+  <circle cx="980" cy="110" r="110" fill="#fff" opacity="0.18"/>
+  <circle cx="860" cy="200" r="70" fill="#fff" opacity="0.14"/>
+  <path d="M140 350h360" stroke="#7f1d1d" stroke-width="18" stroke-linecap="round" opacity="0.26"/>
+  <text x="90" y="150" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#7f1d1d">Churrascaria do Joelso</text>
+  <text x="90" y="210" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#7f1d1d">Carne na chapa</text>
+</svg>

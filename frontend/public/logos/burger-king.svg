@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Burger King">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff1f2"/>
+      <stop offset="100%" stop-color="#fecdd3"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#g)"/>
+  <path d="M78 110c18-28 82-28 100 0" fill="none" stroke="#dc2626" stroke-width="14" stroke-linecap="round"/>
+  <path d="M78 146c18 28 82 28 100 0" fill="none" stroke="#dc2626" stroke-width="14" stroke-linecap="round"/>
+  <rect x="86" y="106" width="84" height="44" rx="22" fill="#fff" opacity="0.9"/>
+  <text x="128" y="192" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" text-anchor="middle" fill="#b91c1c">BK</text>
+</svg>

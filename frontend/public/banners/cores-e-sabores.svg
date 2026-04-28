@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-label="Cores e Sabores banner">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fdf2f8"/>
+      <stop offset="100%" stop-color="#f9a8d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="520" fill="url(#g)"/>
+  <circle cx="1020" cy="120" r="110" fill="#fff" opacity="0.28"/>
+  <circle cx="920" cy="190" r="70" fill="#fff" opacity="0.20"/>
+  <rect x="120" y="310" width="360" height="72" rx="36" fill="#ffffff" opacity="0.25"/>
+  <text x="90" y="150" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#9d174d">Cores e Sabores</text>
+  <text x="90" y="210" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#831843">Sobremesas, brigadeiros e kits presenteáveis</text>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-label="Fogão da Fran banner">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="100%" stop-color="#fdba74"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="520" fill="url(#g)"/>
+  <rect x="760" y="70" width="260" height="260" rx="40" fill="#fff" opacity="0.18"/>
+  <circle cx="920" cy="150" r="48" fill="#fff" opacity="0.24"/>
+  <path d="M230 360h320" stroke="#ea580c" stroke-width="18" stroke-linecap="round" opacity="0.35"/>
+  <text x="90" y="150" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#9a3412">Fogão da Fran</text>
+  <text x="90" y="210" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#7c2d12">Pratos feitos e marmitas executivas do dia</text>
+</svg>

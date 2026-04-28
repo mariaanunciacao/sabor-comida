@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-label="Veg Saladas banner">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ecfdf5"/>
+      <stop offset="100%" stop-color="#86efac"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="520" fill="url(#g)"/>
+  <circle cx="990" cy="110" r="100" fill="#fff" opacity="0.20"/>
+  <circle cx="860" cy="190" r="70" fill="#fff" opacity="0.18"/>
+  <path d="M120 360c120-90 250-90 380 0" fill="none" stroke="#16a34a" stroke-width="20" stroke-linecap="round" opacity="0.28"/>
+  <text x="90" y="150" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#166534">Veg Saladas</text>
+  <text x="90" y="210" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#14532d">Bowls, saladas frescas e opções leves</text>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-label="Panda Sushi banner">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#bfdbfe"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="520" fill="url(#g)"/>
+  <circle cx="980" cy="100" r="120" fill="#fff" opacity="0.22"/>
+  <circle cx="900" cy="180" r="80" fill="#fff" opacity="0.18"/>
+  <path d="M160 350h300" stroke="#1d4ed8" stroke-width="18" stroke-linecap="round" opacity="0.26"/>
+  <text x="90" y="150" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#1d4ed8">Panda Sushi</text>
+  <text x="90" y="210" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#1e3a8a">Combos, temakis e hot rolls bem montados</text>
+</svg>

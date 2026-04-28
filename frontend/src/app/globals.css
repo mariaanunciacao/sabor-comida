@@ -3,54 +3,21 @@
 
 :root {
   --primary: #ea580c; /* laranja */
+  --color-fundo-app: #fff7ed;
+  --color-fundo-nav: rgba(255, 255, 255, 0.8);
+  --color-texto-nav: #374151;
+  --color-texto-nav-hover: #ea580c;
+  --color-botao-perfil: #ea580c;
+  --color-botao-perfil-hover: #c2410c;
+  --color-fundo-menu-mobile: #ffffff;
+  --color-titulos: #f97316; /* titulo da pagina apenas primeira letra maiuscula */
+  --color-botao-pesquisa: #f55310; /* botao para pesquisar*/
+  --color-card-recomendado: #F5B167;
+  --color-botao-pedir-agora: #F58067; /* Botão editar fundo colorido icone branco, MdEdit */
 }
 
 html, body, * {
   font-family: 'Roboto', sans-serif !important;
-}
-
-@theme {
-  --color-titulos: var(--color-orange-500); /* titulo da pagina apenas primeira letra maiuscula */
-  --color-pagina-atual: var(--color-orange-800);
-  --color-botao-pesquisa: var(--color-botao-editar); /* botao para pesquisar*/
-  --color-botao-editar: #f55310; /* Botão editar fundo colorido icone branco, MdEdit */
-  --color-botao-visualizar: #3950FA; /* Botão visualizar fundo colorido icone branco, PiMagnifyingGlassPlusBold*/
-  --color-botao-excluir: #C40703; /* Botão excluir fundo colorido icone branco, LuTrash2*/
-  --color-botao-excel: #64B53A; /* Botão excel fundo colorido icone branco, RiFileExcel2Line*/
-  --color-botao-chromebook: #F4B400; /* Botão chromebook fundo amarelo icone branco, FaChrome*/
-  --color-botao-sincronizar: #b55e3a; /* Botão sincronizar fundo marrom icone branco, BsArrowRepeat*/
-  --color-botao-criar: #3440C2; /* Botão criar fundo colorido icone branco somente +*/
-  --color-textos: var(--color-gray-900); /* cor texto sistema*/
-  --color-colunas-tabela: var(--color-gray-600); /* cor das colunas da tabela*/
-  --color-fundo-pagina: var(--color-gray-100); /* cor do fundo de todas as paginas*/
-  --color-fundo-tabela: var(--color-white); /* cor do fundo da tabela*/
-  --color-verde-neon: #61f511; /*Cor verde muito neon*/
-  --color-azul-unochapeco: #1124f5; /*Azul da marca da unochapeco*/
-  --color-terracota: #b55e3a; /*Cor marrom terracota*/
-  --color-roxo: #43498f; /*Cor roxa*/
-  --color-azul-aco: #35405C; /* azul aco escura*/
-  --color-marrom: #755243; /*marrom*/
-  --color-verde-escuro: #547543; /*verde escuro*/
-  --color-botao-confirmar: var(--color-azul-unochapeco); /* botao confirmar formularios*/
-  --color-botao-setas: var(--color-textos); /* botao de setas IoIosArrow... forward back up down */
-  --color-input-bg: var(--color-fundo-pagina); /* cor do fundo do input */
-  --color-titulo-modal: var(--color-titulos); /* cor do titulo do modal */
-  --color-modal-fundo: var(--color-fundo-pagina); /* cor de fundo do modal */
-  --color-borda-input: var(--color-gray-300); /* cor da borda do input */
-  --color-borda-input-click: var(--color-botao-visualizar); /* cor da borda do input ao clicar para preencher */
-  --color-titulo-input: var(--color-azul-aco); /* cor do titulo do input */
-  --color-escrita-input: var(--color-gray-700); /* cor do texto ao preencher o input */
-  --color-placeholder: var(--color-gray-500); /* cor do placeholder */
-  --color-borda-e-dias-agenda: var(--color-black); /* */
-  --color-fundo-agenda: #e8e8e8; /* cor de fundo da agenda */
-  --color-interface: #172C42;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 

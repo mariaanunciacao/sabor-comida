@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-label="Pizzaria Nativa banner">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f0fdf4"/>
+      <stop offset="100%" stop-color="#bbf7d0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="520" fill="url(#g)"/>
+  <circle cx="990" cy="100" r="120" fill="#fff" opacity="0.18"/>
+  <circle cx="890" cy="190" r="70" fill="#fff" opacity="0.15"/>
+  <path d="M150 350h340" stroke="#16a34a" stroke-width="18" stroke-linecap="round" opacity="0.24"/>
+  <text x="90" y="150" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700" fill="#166534">Pizzaria Nativa</text>
+  <text x="90" y="210" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#14532d">Pizzas de diversos tamanhos para toda a família</text>
+</svg>
