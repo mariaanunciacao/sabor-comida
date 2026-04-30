@@ -12,8 +12,11 @@
   --color-fundo-menu-mobile: #ffffff;
   --color-titulos: #f97316; /* titulo da pagina apenas primeira letra maiuscula */
   --color-botao-pesquisa: #f55310; /* botao para pesquisar*/
-  --color-card-recomendado: #F5B167;
+  --color-card-login: #FDEDEE;
+  --color-fundo-login: #FF6467;
+  --color-fundo-login-dois: #FFD6A7;
   --color-botao-pedir-agora: #F58067; /* Botão editar fundo colorido icone branco, MdEdit */
+  --color-borda-hover: #ea580c;
 }
 
 html, body, * {
@@ -25,4 +28,24 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.login-gradient-bg {
+  background: linear-gradient(334deg, var(--color-fundo-login), var(--color-fundo-login-dois));
+  background-size: 180% 180%;
+  animation: login-gradient-animation 6s ease infinite;
+}
+
+@keyframes login-gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }

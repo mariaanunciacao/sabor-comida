@@ -1,94 +1,12 @@
+import Link from "next/link";
 import Image from "next/image";
-
-const restaurantes = [
-  {
-    name: "Padaria Doce Pão",
-    category: "Padarias",
-    description: "Pães, bolos e café passado na hora.",
-    status: "Aberto",
-    badge: "⭐4.9",
-    logo: "/logos/padaria-doce-pao.svg",
-    banner: "/banners/padaria-doce-pao.svg",
-  },
-  {
-    name: "Cores e Sabores",
-    category: "Doces",
-    description: "Sobremesas, brigadeiros e kits presenteáveis.",
-    status: "Aberto",
-    badge: "⭐4.8",
-    logo: "/logos/cores-e-sabores.svg",
-    banner: "/banners/cores-e-sabores.svg",
-  },
-  {
-    name: "Fogão da Fran",
-    category: "Marmitas",
-    description: "Pratos feitos e marmitas executivas do dia.",
-    status: "Aberto",
-    badge: "⭐4.7",
-    logo: "/logos/fogao-da-fran.svg",
-    banner: "/banners/fogao-da-fran.svg",
-  },
-  {
-    name: "Veg Saladas",
-    category: "Saudáveis",
-    description: "Bowls, saladas frescas e opções leves.",
-    status: "Aberto",
-    badge: "⭐4.9",
-    logo: "/logos/veg-saladas.svg",
-    banner: "/banners/veg-saladas.svg",
-  },
-  {
-    name: "Panda Sushi",
-    category: "Japonesa",
-    description: "Combos, temakis e hot rolls bem montados.",
-    status: "Aberto",
-    badge: "⭐4.8",
-    logo: "/logos/panda-sushi.svg",
-    banner: "/banners/panda-sushi.svg",
-  },
-  {
-    name: "Pizzaria da Família",
-    category: "Pizzas",
-    description: "Pizzas artesanais com borda recheada.",
-    status: "Fechado",
-    badge: "⭐4.6",
-    logo: "/logos/pizzaria-da-familia.svg",
-    banner: "/banners/pizzaria-da-familia.svg",
-  },
-  {
-    name: "Burger King",
-    category: "Lanches",
-    description: "Hambúrgueres frescos.",
-    status: "Fechado",
-    badge: "⭐4.1",
-    logo: "/logos/burger-king.svg",
-    banner: "/banners/burger-king.svg",
-  },
-  {
-    name: "Churrascaria do Joelso",
-    category: "Carnes",
-    description: "Carne na chapa.",
-    status: "Fechado",
-    badge: "⭐5.0",
-    logo: "/logos/churrascaria-do-joelso.svg",
-    banner: "/banners/churrascaria-do-joelso.svg",
-  },
-  {
-    name: "Pizzaria Nativa",
-    category: "Pizzas",
-    description: "Pizzas de diversos tamanhos para toda a família.",
-    status: "Fechado",
-    badge: "⭐4.6",
-    logo: "/logos/pizzaria-nativa.svg",
-    banner: "/banners/pizzaria-nativa.svg",
-  },
-];
+import { restaurantes } from "../restaurants-data";
 
 export default function Page() {
   return (
     <main className="flex-1 bg-(--color-fundo-app) px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-7xl">
-        <section >
+        <section>
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <h1 className="mt-3 text-3xl font-semibold tracking-tight text-(--color-titulos)">
@@ -121,8 +39,9 @@ export default function Page() {
 
         <section className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {restaurantes.map((restaurante) => (
-            <article
+            <Link
               key={restaurante.name}
+              href={`/restaurante-perfil?restaurant=${restaurante.slug}`}
               className="group overflow-hidden rounded-[1.5rem] border border-white/80 bg-white/85 shadow-[0_14px_40px_rgba(249,115,22,0.10)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(245,128,103,0.22)]"
             >
               <div className="relative h-36 overflow-hidden transition duration-300 group-hover:opacity-95">
@@ -170,12 +89,12 @@ export default function Page() {
                 <p className="mt-4 text-sm leading-6 text-gray-600">{restaurante.description}</p>
 
                 <div className="mt-5 flex items-center justify-between">
-                  <button className="rounded-xl bg-(--color-botao-pedir-agora) px-4 py-2 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:opacity-90">
+                  <span className="rounded-xl bg-(--color-botao-pedir-agora) px-4 py-2 text-sm font-semibold text-white transition duration-300 group-hover:opacity-95">
                     Ver menu
-                  </button>
+                  </span>
                 </div>
               </div>
-            </article>
+            </Link>
           ))}
         </section>
       </div>
