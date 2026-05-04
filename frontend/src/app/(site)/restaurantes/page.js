@@ -1,8 +1,16 @@
+import { getRestaurants, getRestaurantImage } from "../../../lib/api";
 import Link from "next/link";
 import Image from "next/image";
-import { restaurantes } from "../restaurants-data";
 
-export default function Page() {
+export default async function Page() {
+  let restaurantes = [];
+
+  try {
+    restaurantes = await getRestaurants();
+  } catch {
+    restaurantes = [];
+  }
+
   return (
     <main className="flex-1 bg-(--color-fundo-app) px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-7xl">
@@ -40,30 +48,29 @@ export default function Page() {
         <section className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {restaurantes.map((restaurante) => (
             <Link
-              key={restaurante.name}
-              href={`/restaurante-perfil?restaurant=${restaurante.slug}`}
+              key={restaurante.id}
+              href={`/restaurante-perfil?restaurantId=${restaurante.id}`}
               className="group overflow-hidden rounded-[1.5rem] border border-white/80 bg-white/85 shadow-[0_14px_40px_rgba(249,115,22,0.10)] backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(245,128,103,0.22)]"
             >
               <div className="relative h-36 overflow-hidden transition duration-300 group-hover:opacity-95">
                 <Image
-                  src={restaurante.banner}
-                  alt={`${restaurante.name} banner`}
+                  src={getRestaurantImage(restaurante, 'banner')}
+                  alt={`${restaurante.nome_restaurante} banner`}
                   fill
                   sizes="(max-width: 1280px) 100vw, 33vw"
                   className="object-cover transition duration-500 group-hover:scale-105"
+                  unoptimized
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-black/10 to-transparent" />
                 <div className="absolute left-5 top-5 flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-white/90 shadow-sm transition duration-300 group-hover:scale-105">
                   <Image
-                    src={restaurante.logo}
-                    alt={restaurante.name}
+                    src={getRestaurantImage(restaurante)}
+                    alt={restaurante.nome_restaurante}
                     width={64}
                     height={64}
                     className="h-full w-full object-cover"
+                    unoptimized
                   />
-                </div>
-                <div className="absolute right-5 top-5 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm">
-                  {restaurante.badge}
                 </div>
               </div>
 
@@ -71,26 +78,25 @@ export default function Page() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h2 className="text-lg font-semibold text-gray-900 transition group-hover:text-(--color-titulos)">
-                      {restaurante.name}
+                      {restaurante.nome_restaurante}
                     </h2>
-                    <p className="mt-1 text-sm text-gray-500">{restaurante.category}</p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      {restaurante.categorias?.map((categoria) => categoria.nome_categoria).join(' • ') || 'Sem categoria cadastrada'}
+                    </p>
                   </div>
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      restaurante.status === "Aberto"
-                        ? "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200"
-                        : "bg-rose-100 text-rose-700 ring-1 ring-rose-200"
-                    }`}
-                  >
-                    {restaurante.status}
-                  </span>
                 </div>
 
-                <p className="mt-4 text-sm leading-6 text-gray-600">{restaurante.description}</p>
+                <p className="mt-4 text-sm leading-6 text-gray-600">
+                  {restaurante.enderecoPrincipal
+                    ? `${restaurante.enderecoPrincipal.logradouro}, ${restaurante.enderecoPrincipal.numero} - ${restaurante.enderecoPrincipal.cidade}/${restaurante.enderecoPrincipal.estado}`
+                    : 'Endereço não cadastrado'}
+                </p>
+
+                <p className="mt-2 text-sm text-gray-500">Horário: {restaurante.horario_atendimento}</p>
 
                 <div className="mt-5 flex items-center justify-between">
                   <span className="rounded-xl bg-(--color-botao-pedir-agora) px-4 py-2 text-sm font-semibold text-white transition duration-300 group-hover:opacity-95">
-                    Ver menu
+                    Ver restaurante
                   </span>
                 </div>
               </div>
