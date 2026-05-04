@@ -56,7 +56,7 @@ export async function login(req, res) {
             {
                 model: Restaurante,
                 as: 'restaurantes',
-                attributes: ['id', 'nome_restaurante', 'descricao', 'logo_path', 'banner_path', 'horario_atendimento', 'tempo_entrega', 'idUsuario'],
+                attributes: ['id', 'nome_restaurante', 'descricao', 'logo_path', 'banner_path', 'horario_atendimento', 'tempo_entrega', 'idUsuario', 'status_aprovacao'],
                 required: false,
             },
         ],
@@ -114,6 +114,7 @@ export async function login(req, res) {
                 banner_path: restaurante.banner_path,
                 horario_atendimento: restaurante.horario_atendimento,
                 tempo_entrega: restaurante.tempo_entrega,
+                status_aprovacao: restaurante.status_aprovacao,
             }
             : null,
     });

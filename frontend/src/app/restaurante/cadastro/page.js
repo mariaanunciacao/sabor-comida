@@ -28,6 +28,7 @@ export default function Page() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [restaurantId, setRestaurantId] = useState(null);
+  const [statusAprovacao, setStatusAprovacao] = useState('pendente');
   const [canEdit, setCanEdit] = useState(false);
   const [formData, setFormData] = useState({
     cnpj: '',
@@ -61,6 +62,7 @@ export default function Page() {
 
         const restaurant = await getMyRestaurant(session.token);
         setRestaurantId(restaurant.id);
+        setStatusAprovacao(restaurant.statusAprovacao ?? restaurant.status_aprovacao ?? 'pendente');
         setFormData({
           cnpj: restaurant.cnpj ?? '',
           nome_restaurante: restaurant.nome_restaurante ?? '',
@@ -104,6 +106,7 @@ export default function Page() {
       });
 
       setRestaurantId(response.restaurante?.id ?? restaurantId);
+      setStatusAprovacao(response.restaurante?.statusAprovacao ?? response.restaurante?.status_aprovacao ?? 'pendente');
       setMessage('Informações enviadas para análise e salvas no banco.');
     } catch (error) {
       setMessage(error?.message ?? 'Não foi possível salvar as informações agora.');
@@ -161,7 +164,12 @@ export default function Page() {
 
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Dados para análise</h2>
-            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-orange-700">Restaurante #{restaurantId ?? 'novo'}</span>
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-orange-700">Restaurante #{restaurantId ?? 'novo'}</span>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusAprovacao === 'aprovado' ? 'bg-emerald-100 text-emerald-800' : statusAprovacao === 'rejeitado' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}`}>
+                {statusAprovacao === 'aprovado' ? 'Aprovado' : statusAprovacao === 'rejeitado' ? 'Rejeitado' : 'Pendente'}
+              </span>
+            </div>
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -195,6 +203,14 @@ export default function Page() {
               Voltar para área do restaurante
             </Link>
           </div>
+
+          <p className="mt-4 text-sm text-slate-600">
+            {statusAprovacao === 'aprovado'
+              ? 'Seu restaurante já foi aprovado pelo administrador.'
+              : statusAprovacao === 'rejeitado'
+                ? 'Seu cadastro foi rejeitado. Ajuste as informações e envie novamente.'
+                : 'Seu cadastro está pendente de análise do administrador.'}
+          </p>
 
           {message ? <p className="mt-4 text-sm text-amber-700">{message}</p> : null}
         </form>

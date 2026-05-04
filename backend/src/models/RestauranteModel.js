@@ -31,6 +31,11 @@ const Restaurante = sequelize.define(
             type: DataTypes.STRING(500),
             allowNull: true,
         },
+        status_aprovacao: {
+            type: DataTypes.STRING(30),
+            allowNull: false,
+            defaultValue: 'pendente',
+        },
         idUsuario: {
             type: DataTypes.INTEGER,
             allowNull: true,

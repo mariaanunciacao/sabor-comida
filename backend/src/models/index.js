@@ -259,7 +259,7 @@ export {
 };
 
 export async function initializeModels() {
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: { drop: false } });
 
     await Perfil.findOrCreate({
         where: { perfil: 'cliente' },

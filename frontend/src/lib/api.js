@@ -69,6 +69,48 @@ export async function updateMyRestaurant(token, payload) {
     });
 }
 
+export async function getAdminUsers(token) {
+    return fetchJson('/admin/usuarios', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+}
+
+export async function getAdminProfiles(token) {
+    return fetchJson('/admin/perfis', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+}
+
+export async function getAdminDeliverers(token) {
+    return fetchJson('/admin/entregadores', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+}
+
+export async function getAdminRestaurants(token) {
+    return fetchJson('/admin/restaurantes', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+}
+
+export async function updateAdminRestaurantStatus(token, restaurantId, statusAprovacao) {
+    return fetchJson(`/admin/restaurantes/${restaurantId}/status`, {
+        method: 'PATCH',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status_aprovacao: statusAprovacao }),
+    });
+}
+
 function pickFirstNonEmptyValue(...values) {
     return values.find((value) => typeof value === 'string' ? value.trim() !== '' : Boolean(value)) ?? null;
 }

@@ -62,9 +62,21 @@ export default async function Page({ searchParams }) {
 
             {destaque ? (
               <div className="mt-5 rounded-[1.5rem] border border-white/25 bg-white/15 p-4 backdrop-blur-sm">
-                <p className="text-xs uppercase tracking-[0.2em] text-white/75">Restaurante ativo</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-xs uppercase tracking-[0.2em] text-white/75">Restaurante ativo</p>
+                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${destaque.statusAprovacao === 'aprovado' ? 'bg-emerald-100 text-emerald-800' : destaque.statusAprovacao === 'rejeitado' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}`}>
+                    {destaque.statusAprovacao === 'aprovado' ? 'Aprovado' : destaque.statusAprovacao === 'rejeitado' ? 'Rejeitado' : 'Pendente'}
+                  </span>
+                </div>
                 <p className="mt-1 text-lg font-semibold">{destaque.nome_restaurante}</p>
                 <p className="text-sm text-white/85">{getRestaurantAddressLabel(destaque)}</p>
+                <p className="mt-2 text-sm text-white/85">
+                  {destaque.statusAprovacao === 'aprovado'
+                    ? 'Seu restaurante já pode seguir para cardápio e operação.'
+                    : destaque.statusAprovacao === 'rejeitado'
+                      ? 'O cadastro foi rejeitado. Ajuste os dados na tela de cadastro.'
+                      : 'Seu cadastro está aguardando aprovação do administrador.'}
+                </p>
               </div>
             ) : null}
 

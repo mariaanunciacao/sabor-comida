@@ -21,6 +21,7 @@ function toPlainRestaurant(restaurante) {
         ...data,
         logoUrl: data.logo_path ?? null,
         bannerUrl: data.banner_path ?? null,
+        statusAprovacao: data.status_aprovacao ?? 'pendente',
         enderecoPrincipal: enderecos[0] ?? null,
         enderecos,
         categorias,
@@ -129,6 +130,10 @@ export async function atualizarMeuRestaurante(req, res) {
             const valorAtualizado = req.body[campo];
             restaurante[campo] = typeof valorAtualizado === 'string' ? valorAtualizado.trim() : valorAtualizado;
         }
+    }
+
+    if (restaurante.status_aprovacao !== 'aprovado') {
+        restaurante.status_aprovacao = 'pendente';
     }
 
     await restaurante.save();
