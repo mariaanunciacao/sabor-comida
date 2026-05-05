@@ -117,6 +117,35 @@ export async function getAdminDeliverers(token) {
     });
 }
 
+export async function createAdminDeliverer(token, payload) {
+    return fetchJson('/admin/entregadores', {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+}
+
+export async function updateAdminDeliverer(token, delivererId, payload) {
+    return fetchJson(`/admin/entregadores/${delivererId}`, {
+        method: 'PATCH',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+}
+
+export async function deleteAdminDeliverer(token, delivererId) {
+    return fetchJson(`/admin/entregadores/${delivererId}`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+}
+
 export async function getAdminRestaurants(token) {
     return fetchJson('/admin/restaurantes', {
         headers: {

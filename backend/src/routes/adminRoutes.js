@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { atualizarPerfil, atualizarPerfisUsuario, atualizarStatusRestaurante, criarPerfil, listarEntregadores, listarPerfis, listarRestaurantes, listarUsuarios } from '../controllers/adminController.js';
+import { atualizarPerfil, atualizarPerfisUsuario, atualizarStatusRestaurante, criarPerfil, listarPerfis, listarRestaurantes, listarUsuarios } from '../controllers/adminController.js';
 import { atualizarCategoria, criarCategoria, excluirCategoria, listarCategorias } from '../controllers/categoriaController.js';
+import { atualizarEntregador, criarEntregador, excluirEntregador, listarEntregadores } from '../controllers/entregadorController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
 const router = Router();
@@ -10,6 +11,9 @@ router.get('/admin/perfis', authenticateToken, authorizeRoles('admin'), listarPe
 router.post('/admin/perfis', authenticateToken, authorizeRoles('admin'), criarPerfil);
 router.patch('/admin/perfis/:id', authenticateToken, authorizeRoles('admin'), atualizarPerfil);
 router.get('/admin/entregadores', authenticateToken, authorizeRoles('admin'), listarEntregadores);
+router.post('/admin/entregadores', authenticateToken, authorizeRoles('admin'), criarEntregador);
+router.patch('/admin/entregadores/:id', authenticateToken, authorizeRoles('admin'), atualizarEntregador);
+router.delete('/admin/entregadores/:id', authenticateToken, authorizeRoles('admin'), excluirEntregador);
 router.get('/admin/restaurantes', authenticateToken, authorizeRoles('admin'), listarRestaurantes);
 router.get('/admin/categorias', authenticateToken, authorizeRoles('admin'), listarCategorias);
 router.post('/admin/categorias', authenticateToken, authorizeRoles('admin'), criarCategoria);

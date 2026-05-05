@@ -1,4 +1,4 @@
-import { Entregador, Perfil, Restaurante, Usuario, UsuarioPerfil, sequelize } from '../models/index.js';
+import { Perfil, Restaurante, Usuario, UsuarioPerfil, sequelize } from '../models/index.js';
 
 function toPlainRestaurant(restaurante) {
     const data = restaurante.toJSON();
@@ -112,15 +112,6 @@ export async function atualizarPerfil(req, res) {
         message: 'Perfil atualizado com sucesso.',
         perfil: currentPerfil,
     });
-}
-
-export async function listarEntregadores(req, res) {
-    const entregadores = await Entregador.findAll({
-        include: [{ model: Usuario, as: 'usuario', attributes: ['id', 'nome', 'email'] }],
-        order: [['id', 'ASC']],
-    });
-
-    return res.json(entregadores);
 }
 
 export async function listarRestaurantes(req, res) {

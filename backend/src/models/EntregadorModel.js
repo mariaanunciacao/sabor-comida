@@ -10,6 +10,27 @@ const Entregador = sequelize.define(
             autoIncrement: true,
             primaryKey: true
         },
+        nome: {
+            type: DataTypes.STRING(90),
+            allowNull: true,
+        },
+        email: {
+            type: DataTypes.STRING(200),
+            allowNull: true,
+            unique: true,
+        },
+        telefone: {
+            type: DataTypes.STRING(30),
+            allowNull: true,
+        },
+        veiculo: {
+            type: DataTypes.STRING(90),
+            allowNull: true,
+        },
+        regiao_atuacao: {
+            type: DataTypes.STRING(120),
+            allowNull: true,
+        },
         idUsuario: {
             type: DataTypes.INTEGER,
             allowNull: true,
