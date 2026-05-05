@@ -1,11 +1,14 @@
 import { Router } from 'express';
-import { atualizarCategoria, atualizarPerfisUsuario, atualizarStatusRestaurante, criarCategoria, excluirCategoria, listarCategorias, listarEntregadores, listarPerfis, listarRestaurantes, listarUsuarios } from '../controllers/adminController.js';
+import { atualizarPerfil, atualizarPerfisUsuario, atualizarStatusRestaurante, criarPerfil, listarEntregadores, listarPerfis, listarRestaurantes, listarUsuarios } from '../controllers/adminController.js';
+import { atualizarCategoria, criarCategoria, excluirCategoria, listarCategorias } from '../controllers/categoriaController.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
 router.get('/admin/usuarios', authenticateToken, authorizeRoles('admin'), listarUsuarios);
 router.get('/admin/perfis', authenticateToken, authorizeRoles('admin'), listarPerfis);
+router.post('/admin/perfis', authenticateToken, authorizeRoles('admin'), criarPerfil);
+router.patch('/admin/perfis/:id', authenticateToken, authorizeRoles('admin'), atualizarPerfil);
 router.get('/admin/entregadores', authenticateToken, authorizeRoles('admin'), listarEntregadores);
 router.get('/admin/restaurantes', authenticateToken, authorizeRoles('admin'), listarRestaurantes);
 router.get('/admin/categorias', authenticateToken, authorizeRoles('admin'), listarCategorias);

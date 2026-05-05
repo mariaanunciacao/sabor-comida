@@ -5,8 +5,8 @@ import { TbCategoryFilled } from "react-icons/tb";
 const cards = [
   { title: 'Restaurantes', description: 'Aprove ou rejeite restaurantes cadastrados.', icon: MdStorefront, href: '/admin/restaurantes' },
   { title: 'Entregadores', description: 'Visualize entregadores vinculados ao sistema.', icon: MdLocalShipping, href: '/admin/entregadores' },
-  { title: 'Categorias', description: 'Crie ou edite categorias.', icon: TbCategoryFilled, href: '/admin/categorias' },
-  { title: 'Perfis', description: 'Crie ou edite perfis.', icon: MdSecurity, href: '/admin/perfis' },
+  { title: 'Categorias', description: 'Crie ou edite categorias conforme a necessidade do sistema.', icon: TbCategoryFilled, href: '/admin/categorias' },
+  { title: 'Perfis', description: 'Crie ou edite perfis para associar aos usuários.', icon: MdSecurity, href: '/admin/perfis' },
 ];
 
 export default function Page() {

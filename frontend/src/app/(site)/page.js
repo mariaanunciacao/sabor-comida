@@ -1,9 +1,10 @@
-import { getFeaturedProducts, getRestaurants, getRestaurantImage, getUniqueCategories } from "../../lib/api";
+import { getCategories, getFeaturedProducts, getRestaurants, getRestaurantImage } from "../../lib/api";
 import Link from "next/link";
 import Image from "next/image";
 
 export default async function Home() {
   let restaurantes = [];
+  let categorias = [];
 
   try {
     restaurantes = await getRestaurants();
@@ -11,8 +12,13 @@ export default async function Home() {
     restaurantes = [];
   }
 
+  try {
+    categorias = await getCategories();
+  } catch {
+    categorias = [];
+  }
+
   const restaurantesEmAlta = restaurantes.slice(0, 9);
-  const categorias = getUniqueCategories(restaurantes);
   const recomendados = getFeaturedProducts(restaurantes).slice(0, 8);
 
   return (

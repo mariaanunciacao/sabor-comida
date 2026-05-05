@@ -267,16 +267,6 @@ export async function initializeModels() {
     await sequelize.sync({ alter: { drop: false } });
 
     await Perfil.findOrCreate({
-        where: { perfil: 'cliente' },
-        defaults: { nome: 'Cliente', perfil: 'cliente' },
-    });
-
-    await Perfil.findOrCreate({
-        where: { perfil: 'restaurante' },
-        defaults: { nome: 'Restaurante', perfil: 'restaurante' },
-    });
-
-    await Perfil.findOrCreate({
         where: { perfil: 'admin' },
         defaults: { nome: 'Administrador', perfil: 'admin' },
     });

@@ -1,4 +1,4 @@
-import { Categoria, Entregador, Perfil, Produto, Restaurante, RestauranteCategoria, Usuario, UsuarioPerfil, sequelize } from '../models/index.js';
+import { Entregador, Perfil, Restaurante, Usuario, UsuarioPerfil, sequelize } from '../models/index.js';
 
 function toPlainRestaurant(restaurante) {
     const data = restaurante.toJSON();
@@ -45,6 +45,75 @@ export async function listarPerfis(req, res) {
     return res.json(perfis);
 }
 
+export async function criarPerfil(req, res) {
+    const nome = String(req.body?.nome ?? '').trim();
+    const perfil = String(req.body?.perfil ?? '').trim().toLowerCase();
+
+    if (!nome || !perfil) {
+        return res.status(400).json({ message: 'Informe nome e identificador do perfil.' });
+    }
+
+    if (perfil === 'admin') {
+        return res.status(409).json({ message: 'O perfil admin é padrão do sistema e já vem criado.' });
+    }
+
+    const existingPerfil = await Perfil.findOne({ where: { perfil } });
+
+    if (existingPerfil) {
+        return res.status(409).json({ message: 'Já existe um perfil com este identificador.' });
+    }
+
+    const createdPerfil = await Perfil.create({ nome, perfil });
+
+    return res.status(201).json({
+        message: 'Perfil criado com sucesso.',
+        perfil: createdPerfil,
+    });
+}
+
+export async function atualizarPerfil(req, res) {
+    const perfilId = Number(req.params.id);
+    const nome = String(req.body?.nome ?? '').trim();
+    const perfil = String(req.body?.perfil ?? '').trim().toLowerCase();
+
+    if (!Number.isInteger(perfilId) || perfilId <= 0) {
+        return res.status(400).json({ message: 'Informe um perfilId válido.' });
+    }
+
+    if (!nome || !perfil) {
+        return res.status(400).json({ message: 'Informe nome e identificador do perfil.' });
+    }
+
+    const currentPerfil = await Perfil.findByPk(perfilId);
+
+    if (!currentPerfil) {
+        return res.status(404).json({ message: 'Perfil não encontrado.' });
+    }
+
+    if (currentPerfil.perfil === 'admin' && perfil !== 'admin') {
+        return res.status(409).json({ message: 'O perfil admin não pode ter seu identificador alterado.' });
+    }
+
+    if (perfil === 'admin' && currentPerfil.perfil !== 'admin') {
+        return res.status(409).json({ message: 'O perfil admin é padrão do sistema e já vem criado.' });
+    }
+
+    const existingPerfil = await Perfil.findOne({ where: { perfil } });
+
+    if (existingPerfil && Number(existingPerfil.id) !== perfilId) {
+        return res.status(409).json({ message: 'Já existe um perfil com este identificador.' });
+    }
+
+    currentPerfil.nome = nome;
+    currentPerfil.perfil = perfil;
+    await currentPerfil.save();
+
+    return res.json({
+        message: 'Perfil atualizado com sucesso.',
+        perfil: currentPerfil,
+    });
+}
+
 export async function listarEntregadores(req, res) {
     const entregadores = await Entregador.findAll({
         include: [{ model: Usuario, as: 'usuario', attributes: ['id', 'nome', 'email'] }],
@@ -80,6 +149,18 @@ export async function atualizarStatusRestaurante(req, res) {
 
     if (!restaurante) {
         return res.status(404).json({ message: 'Restaurante não encontrado.' });
+    }
+
+    const statusAtual = restaurante.status_aprovacao ?? 'pendente';
+    const trocaDiretaEntreRevisados = (
+        (statusAtual === 'aprovado' && statusAprovacao === 'rejeitado')
+        || (statusAtual === 'rejeitado' && statusAprovacao === 'aprovado')
+    );
+
+    if (trocaDiretaEntreRevisados) {
+        return res.status(409).json({
+            message: 'Para alternar entre aprovado e reprovado, volte o restaurante para pendente primeiro.',
+        });
     }
 
     restaurante.status_aprovacao = statusAprovacao;
@@ -154,95 +235,3 @@ export async function atualizarPerfisUsuario(req, res) {
     });
 }
 
-export async function listarCategorias(req, res) {
-    const categorias = await Categoria.findAll({ order: [['id', 'ASC']] });
-    return res.json(categorias);
-}
-
-export async function criarCategoria(req, res) {
-    const nomeCategoria = String(req.body?.nome_categoria ?? '').trim();
-    const imagemPath = String(req.body?.imagem_path ?? '').trim();
-
-    if (!nomeCategoria) {
-        return res.status(400).json({ message: 'Informe o nome da categoria.' });
-    }
-
-    const existingCategory = await Categoria.findOne({ where: { nome_categoria: nomeCategoria } });
-
-    if (existingCategory) {
-        return res.status(409).json({ message: 'Já existe uma categoria com este nome.' });
-    }
-
-    const categoria = await Categoria.create({
-        nome_categoria: nomeCategoria,
-        imagem_path: imagemPath || null,
-    });
-
-    return res.status(201).json({
-        message: 'Categoria criada com sucesso.',
-        categoria,
-    });
-}
-
-export async function atualizarCategoria(req, res) {
-    const categoriaId = Number(req.params.id);
-    const nomeCategoria = String(req.body?.nome_categoria ?? '').trim();
-    const imagemPath = String(req.body?.imagem_path ?? '').trim();
-
-    if (!Number.isInteger(categoriaId) || categoriaId <= 0) {
-        return res.status(400).json({ message: 'Informe uma categoriaId válida.' });
-    }
-
-    if (!nomeCategoria) {
-        return res.status(400).json({ message: 'Informe o nome da categoria.' });
-    }
-
-    const categoria = await Categoria.findByPk(categoriaId);
-
-    if (!categoria) {
-        return res.status(404).json({ message: 'Categoria não encontrada.' });
-    }
-
-    const existingCategory = await Categoria.findOne({ where: { nome_categoria: nomeCategoria } });
-
-    if (existingCategory && Number(existingCategory.id) !== categoriaId) {
-        return res.status(409).json({ message: 'Já existe uma categoria com este nome.' });
-    }
-
-    categoria.nome_categoria = nomeCategoria;
-    categoria.imagem_path = imagemPath || null;
-
-    await categoria.save();
-
-    return res.json({
-        message: 'Categoria atualizada com sucesso.',
-        categoria,
-    });
-}
-
-export async function excluirCategoria(req, res) {
-    const categoriaId = Number(req.params.id);
-
-    if (!Number.isInteger(categoriaId) || categoriaId <= 0) {
-        return res.status(400).json({ message: 'Informe uma categoriaId válida.' });
-    }
-
-    const categoria = await Categoria.findByPk(categoriaId);
-
-    if (!categoria) {
-        return res.status(404).json({ message: 'Categoria não encontrada.' });
-    }
-
-    const [restaurantesVinculados, produtosVinculados] = await Promise.all([
-        RestauranteCategoria.count({ where: { idCategoria: categoriaId } }),
-        Produto.count({ where: { idCategoria: categoriaId } }),
-    ]);
-
-    if (restaurantesVinculados > 0 || produtosVinculados > 0) {
-        return res.status(409).json({ message: 'Não é possível excluir uma categoria que já está vinculada a restaurantes ou produtos.' });
-    }
-
-    await categoria.destroy();
-
-    return res.json({ message: 'Categoria excluída com sucesso.' });
-}

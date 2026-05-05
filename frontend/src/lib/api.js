@@ -33,6 +33,10 @@ export async function getRestaurants() {
     return fetchJson('/restaurantes');
 }
 
+export async function getCategories() {
+    return fetchJson('/categorias');
+}
+
 export async function getRestaurantById(id) {
     return fetchJson(`/restaurantes/${id}`);
 }
@@ -82,6 +86,26 @@ export async function getAdminProfiles(token) {
         headers: {
             Authorization: `Bearer ${token}`,
         },
+    });
+}
+
+export async function createAdminProfile(token, payload) {
+    return fetchJson('/admin/perfis', {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+}
+
+export async function updateAdminProfile(token, profileId, payload) {
+    return fetchJson(`/admin/perfis/${profileId}`, {
+        method: 'PATCH',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
     });
 }
 

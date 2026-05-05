@@ -103,3 +103,11 @@ export async function search(req, res) {
         produtos,
     });
 }
+
+export async function listarCategorias(req, res) {
+    const categorias = await Categoria.findAll({
+        order: [['id', 'ASC']],
+    });
+
+    return res.json(categorias);
+}

@@ -79,13 +79,15 @@ export default function Page() {
     try {
       if (selectedCategoryId) {
         const response = await updateAdminCategory(session.token, selectedCategoryId, formData);
-        setCategories((current) => current.map((category) => (Number(category.id) === Number(selectedCategoryId) ? response.categoria : category)));
-        setMessage('Categoria atualizada com sucesso.');
+        const updatedCategories = await getAdminCategories(session.token);
+        setCategories(updatedCategories);
+        setMessage(response?.message ?? 'Categoria atualizada com sucesso.');
       } else {
         const response = await createAdminCategory(session.token, formData);
-        setCategories((current) => [response.categoria, ...current]);
+        const updatedCategories = await getAdminCategories(session.token);
+        setCategories(updatedCategories);
         setFormData(emptyForm);
-        setMessage('Categoria criada com sucesso.');
+        setMessage(response?.message ?? 'Categoria criada com sucesso.');
       }
     } catch (error) {
       setMessage(error?.message ?? 'Não foi possível salvar a categoria agora.');
@@ -111,16 +113,33 @@ export default function Page() {
     setSaving(true);
     setMessage('');
 
+    const previousCategories = categories;
+    const categoryWasSelected = Number(selectedCategoryId) === Number(categoryId);
+
+    setCategories((current) => current.filter((category) => Number(category.id) !== Number(categoryId)));
+
+    if (categoryWasSelected) {
+      handleNew();
+    }
+
     try {
       await deleteAdminCategory(session.token, categoryId);
-      setCategories((current) => current.filter((category) => Number(category.id) !== Number(categoryId)));
 
-      if (Number(selectedCategoryId) === Number(categoryId)) {
-        handleNew();
-      }
+      const updatedCategories = await getAdminCategories(session.token);
+      setCategories(updatedCategories);
 
       setMessage('Categoria excluída com sucesso.');
     } catch (error) {
+      setCategories(previousCategories);
+
+      if (categoryWasSelected) {
+        const restoredCategory = previousCategories.find((category) => Number(category.id) === Number(categoryId));
+
+        if (restoredCategory) {
+          handleEdit(restoredCategory);
+        }
+      }
+
       setMessage(error?.message ?? 'Não foi possível excluir a categoria agora.');
     } finally {
       setSaving(false);

@@ -57,9 +57,6 @@ export default function Page() {
 
         <div className="rounded-[2rem] border border-white/80 bg-white p-6 shadow-[0_14px_40px_rgba(249,115,22,0.10)]">
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Próxima implementação</h2>
-          <p className="mt-4 text-sm leading-6 text-slate-600">
-            Depois dessa tela, a gente liga o CRUD real do menu com o banco e permite adicionar categorias e produtos pelo painel.
-          </p>
         </div>
       </section>
     </div>
