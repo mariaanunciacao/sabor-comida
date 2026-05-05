@@ -38,7 +38,7 @@ export default async function Page({ searchParams }) {
               src={getRestaurantImage(restaurant, 'banner')}
               alt={`${restaurant.nome_restaurante} banner`}
               fill
-              className="object-cover"
+              className="object-cover"   
               sizes="100vw"
               priority
               unoptimized

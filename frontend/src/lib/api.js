@@ -101,6 +101,43 @@ export async function getAdminRestaurants(token) {
     });
 }
 
+export async function getAdminCategories(token) {
+    return fetchJson('/admin/categorias', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+}
+
+export async function createAdminCategory(token, payload) {
+    return fetchJson('/admin/categorias', {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+}
+
+export async function updateAdminCategory(token, categoryId, payload) {
+    return fetchJson(`/admin/categorias/${categoryId}`, {
+        method: 'PATCH',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+    });
+}
+
+export async function deleteAdminCategory(token, categoryId) {
+    return fetchJson(`/admin/categorias/${categoryId}`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+}
+
 export async function updateAdminRestaurantStatus(token, restaurantId, statusAprovacao) {
     return fetchJson(`/admin/restaurantes/${restaurantId}/status`, {
         method: 'PATCH',
@@ -108,6 +145,16 @@ export async function updateAdminRestaurantStatus(token, restaurantId, statusApr
             Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ status_aprovacao: statusAprovacao }),
+    });
+}
+
+export async function updateAdminUserProfile(token, userId, idPerfil) {
+    return fetchJson(`/admin/usuarios/${userId}/perfil`, {
+        method: 'PATCH',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ idPerfil }),
     });
 }
 

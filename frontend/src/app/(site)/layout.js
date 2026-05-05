@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { MdOutlinePerson } from "react-icons/md";
 import { IoSearchCircleOutline } from "react-icons/io5";
+import AuthActions from "../../components/AuthActions";
 
 export default function SiteLayout({ children }) {
   return (
@@ -55,11 +55,7 @@ export default function SiteLayout({ children }) {
             </div>
           </div>
 
-          <div className="ml-auto flex shrink-0 items-center gap-3">
-            <Link href="/login" className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-(--color-botao-perfil) text-white shadow-sm hover:bg-(--color-botao-perfil-hover)">
-              <MdOutlinePerson size={20} />
-            </Link>
-          </div>
+          <AuthActions />
         </div>
 
         <div className="md:hidden" id="mobile-menu">
@@ -69,7 +65,7 @@ export default function SiteLayout({ children }) {
             <Link href="/mais-pedidos" className="block py-2 text-(--color-texto-nav)">Mais Pedidos</Link>
             <Link href="/restaurante" className="block py-2 text-(--color-texto-nav)">Área do restaurante</Link>
             <a href="#" className="block py-2 text-(--color-texto-nav)">Pesquise por Produtos ou Restaurantes</a>
-            <Link href="/login" className="block mt-2 rounded-md bg-(--color-botao-perfil) px-3 py-2 text-white"><MdOutlinePerson /></Link>
+            <AuthActions mobile />
           </div>
         </div>
       </nav>

@@ -124,6 +124,7 @@ export async function atualizarMeuRestaurante(req, res) {
     }
 
     const camposAtualizaveis = ['cnpj', 'nome_restaurante', 'descricao', 'logo_path', 'banner_path', 'horario_atendimento', 'tempo_entrega'];
+    const camposEndereco = ['logradouro', 'cep', 'numero', 'cidade', 'estado'];
 
     for (const campo of camposAtualizaveis) {
         if (Object.prototype.hasOwnProperty.call(req.body ?? {}, campo)) {
@@ -132,11 +133,43 @@ export async function atualizarMeuRestaurante(req, res) {
         }
     }
 
+    const enderecoPayload = camposEndereco.reduce((accumulator, campo) => {
+        if (Object.prototype.hasOwnProperty.call(req.body ?? {}, campo)) {
+            const valorAtualizado = req.body[campo];
+            accumulator[campo] = typeof valorAtualizado === 'string' ? valorAtualizado.trim() : valorAtualizado;
+        }
+
+        return accumulator;
+    }, {});
+
     if (restaurante.status_aprovacao !== 'aprovado') {
         restaurante.status_aprovacao = 'pendente';
     }
 
     await restaurante.save();
+
+    if (Object.keys(enderecoPayload).length > 0) {
+        const endereco = await RestauranteEndereco.findOne({
+            where: {
+                idRestaurante: restaurante.id,
+            },
+        });
+
+        if (endereco) {
+            for (const campo of camposEndereco) {
+                if (Object.prototype.hasOwnProperty.call(enderecoPayload, campo)) {
+                    endereco[campo] = enderecoPayload[campo];
+                }
+            }
+
+            await endereco.save();
+        } else if (camposEndereco.every((campo) => Object.prototype.hasOwnProperty.call(enderecoPayload, campo))) {
+            await RestauranteEndereco.create({
+                ...enderecoPayload,
+                idRestaurante: restaurante.id,
+            });
+        }
+    }
 
     return res.json({ message: 'Restaurante atualizado com sucesso.', restaurante: toPlainRestaurant(restaurante) });
 }

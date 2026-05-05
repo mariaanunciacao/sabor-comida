@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import jwt from 'jsonwebtoken';
+import { Op } from 'sequelize';
 import { Perfil, Restaurante, Usuario, UsuarioPerfil, sequelize } from '../models/index.js';
 
 const JWT_SECRET = process.env.JWT_SECRET ?? 'dev-jwt-secret-change-me';
@@ -38,15 +39,20 @@ function choosePrimaryProfile(perfis) {
 }
 
 export async function login(req, res) {
-    const email = normalizeEmail(req.body?.email);
+    const identifier = normalizeEmail(req.body?.identifier ?? req.body?.email ?? req.body?.usuario);
     const senha = String(req.body?.senha ?? '').trim();
 
-    if (!email || !senha) {
-        return res.status(400).json({ message: 'Informe email e senha.' });
+    if (!identifier || !senha) {
+        return res.status(400).json({ message: 'Informe usuário ou e-mail e senha.' });
     }
 
     const usuario = await Usuario.findOne({
-        where: { email },
+        where: {
+            [Op.or]: [
+                { email: identifier },
+                { nome: identifier },
+            ],
+        },
         include: [
             {
                 model: UsuarioPerfil,

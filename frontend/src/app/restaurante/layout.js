@@ -1,13 +1,9 @@
 import Link from "next/link";
-import { MdDashboard, MdStorefront, MdOutlinePlace, MdRestaurantMenu, MdListAlt, MdSettings } from "react-icons/md";
+import { MdDashboard, MdStorefront } from "react-icons/md";
 
 const navigationItems = [
   { href: "/restaurante", label: "Dashboard", icon: MdDashboard },
   { href: "/restaurante/cadastro", label: "Cadastro", icon: MdStorefront },
-  { href: "/restaurante/endereco", label: "Endereço", icon: MdOutlinePlace },
-  { href: "/restaurante/cardapio", label: "Cardápio", icon: MdRestaurantMenu },
-  { href: "/restaurante/pedidos", label: "Pedidos", icon: MdListAlt },
-  { href: "/restaurante/configuracoes", label: "Configurações", icon: MdSettings },
 ];
 
 export default function RestauranteLayout({ children }) {
@@ -18,7 +14,7 @@ export default function RestauranteLayout({ children }) {
           <div className="rounded-[1.5rem] bg-gradient-to-br from-orange-500 to-amber-400 p-5 text-white shadow-lg">
             <p className="text-xs uppercase tracking-[0.24em] text-white/80">Painel do parceiro</p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight">Sabor Comida</h1>
-            <p className="mt-2 text-sm text-white/85">Gerencie restaurante, cardápio e pedidos em um só lugar.</p>
+            <p className="mt-2 text-sm text-white/85">Gerencie o cadastro do restaurante em um só lugar.</p>
           </div>
 
           <nav className="mt-6 space-y-2">
@@ -40,7 +36,7 @@ export default function RestauranteLayout({ children }) {
 
           <div className="mt-auto rounded-[1.5rem] border border-orange-100 bg-orange-50 p-4 text-sm text-slate-700">
             <p className="font-semibold text-slate-900">Próximo passo</p>
-            <p className="mt-1">Cadastrar dados reais do restaurante e publicar o primeiro cardápio.</p>
+            <p className="mt-1">Cadastrar os dados do restaurante e enviar para análise do administrador.</p>
           </div>
         </aside>
 

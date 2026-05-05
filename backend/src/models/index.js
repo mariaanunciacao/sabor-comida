@@ -1,4 +1,5 @@
 import { sequelize } from '../config/index.js';
+import crypto from 'node:crypto';
 import Pessoa from './UsuarioModel.js';
 import Usuario from './UsuarioModel.js';
 import Perfil from './PerfilModel.js';
@@ -21,6 +22,10 @@ import Carrinho from './CarrinhoModel.js';
 import Favorito from './FavoritoModel.js';  
 import Avaliacao from './AvaliacaoModel.js';    
 import RecuperacaoSenha from './RecuperacaoSenhaModel.js';
+
+function hashPassword(password) {
+    return crypto.createHash('sha256').update(String(password)).digest('hex');
+}
 
 Usuario.hasMany(Restaurante, {
     as: 'restaurantes',
@@ -275,4 +280,35 @@ export async function initializeModels() {
         where: { perfil: 'admin' },
         defaults: { nome: 'Administrador', perfil: 'admin' },
     });
+
+    const adminPerfil = await Perfil.findOne({ where: { perfil: 'admin' } });
+
+    if (adminPerfil) {
+        const [kingUser, created] = await Usuario.findOrCreate({
+            where: { email: 'king@admin.local' },
+            defaults: {
+                nome: 'king',
+                email: 'king@admin.local',
+                passwordHash: hashPassword('king'),
+            },
+        });
+
+        if (!created) {
+            await kingUser.update({
+                nome: 'king',
+                passwordHash: hashPassword('king'),
+            });
+        }
+
+        await UsuarioPerfil.findOrCreate({
+            where: {
+                idUsuario: kingUser.id,
+                idPerfil: adminPerfil.id,
+            },
+            defaults: {
+                idUsuario: kingUser.id,
+                idPerfil: adminPerfil.id,
+            },
+        });
+    }
 }

@@ -22,7 +22,7 @@ function redirectByProfile(router, session) {
 
 export default function Page() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -43,7 +43,7 @@ export default function Page() {
     setMessage('');
 
     try {
-      const response = await loginUser({ email, senha });
+      const response = await loginUser({ identifier, senha });
 
       saveAuthSession({
         token: response.token,
@@ -72,17 +72,17 @@ export default function Page() {
         <div className="space-y-6 p-8">
           <div className="space-y-2">
             <p className="text-3xl font-semibold tracking-tight text-(--color-titulos)">Entrar no Sabor Comida</p>
-            <div className="text-sm text-gray-600">Use seu e-mail e senha para acessar a área correspondente ao seu perfil</div>
+            <div className="text-sm text-gray-600">Use seu usuário ou e-mail e senha para acessar a área correspondente ao seu perfil</div>
           </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-700">E-mail</p>
+              <p className="text-sm font-medium text-gray-700">Usuário ou e-mail</p>
               <input
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="Digite seu e-mail"
+                type="text"
+                value={identifier}
+                onChange={(event) => setIdentifier(event.target.value)}
+                placeholder="Digite seu usuário ou e-mail"
                 className="input w-full rounded-2xl border border-orange-100 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-[color:var(--color-botao-pesquisa)] focus:ring-2 focus:ring-[color:var(--color-botao-pesquisa)]/20"
               />
             </div>

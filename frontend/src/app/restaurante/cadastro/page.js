@@ -5,13 +5,21 @@ import Link from "next/link";
 import Image from "next/image";
 import { getMyRestaurant, getRestaurantImage, updateMyRestaurant } from "../../../lib/api";
 import { loadAuthSession } from "../../../lib/session";
-import { MdOutlinePhotoCamera, MdOutlineSchedule, MdOutlineBusiness, MdOutlineDescription, MdOutlineSave } from "react-icons/md";
+import { MdOutlinePhotoCamera, MdOutlineSchedule, MdOutlineBusiness, MdOutlineDescription, MdOutlineSave, MdOutlinePlace, MdOutlineMap, MdOutlineLocationOn } from "react-icons/md";
 
 const fields = [
   { title: 'Identificação', description: 'Nome do restaurante, CNPJ e descrição pública.', icon: MdOutlineBusiness },
   { title: 'Imagens', description: 'Logo e banner usados no catálogo e na vitrine.', icon: MdOutlinePhotoCamera },
   { title: 'Operação', description: 'Horário de atendimento e tempo estimado de entrega.', icon: MdOutlineSchedule },
-  { title: 'Resumo', description: 'Confirmação dos dados antes de enviar para análise.', icon: MdOutlineDescription },
+  { title: 'Localização', description: 'Endereço principal usado para análise e exibição no app.', icon: MdOutlinePlace },
+];
+
+const addressFields = [
+  { label: 'Logradouro', key: 'logradouro', placeholder: 'Rua, avenida, travessa...' },
+  { label: 'Número', key: 'numero', placeholder: '123' },
+  { label: 'CEP', key: 'cep', placeholder: '00000-000' },
+  { label: 'Cidade', key: 'cidade', placeholder: 'São Paulo' },
+  { label: 'Estado', key: 'estado', placeholder: 'SP' },
 ];
 
 function normalizeTimeValue(value) {
@@ -38,6 +46,11 @@ export default function Page() {
     banner_path: '',
     horario_atendimento: '',
     tempo_entrega: '',
+    logradouro: '',
+    numero: '',
+    cep: '',
+    cidade: '',
+    estado: '',
   });
 
   useEffect(() => {
@@ -71,6 +84,11 @@ export default function Page() {
           banner_path: restaurant.banner_path ?? '',
           horario_atendimento: restaurant.horario_atendimento ?? '',
           tempo_entrega: normalizeTimeValue(restaurant.tempo_entrega),
+          logradouro: restaurant.enderecoPrincipal?.logradouro ?? '',
+          numero: restaurant.enderecoPrincipal?.numero ?? '',
+          cep: restaurant.enderecoPrincipal?.cep ?? '',
+          cidade: restaurant.enderecoPrincipal?.cidade ?? '',
+          estado: restaurant.enderecoPrincipal?.estado ?? '',
         });
       } catch (error) {
         setMessage(error?.message ?? 'Não foi possível carregar os dados do restaurante.');
@@ -103,6 +121,11 @@ export default function Page() {
         banner_path: formData.banner_path,
         horario_atendimento: formData.horario_atendimento,
         tempo_entrega: formData.tempo_entrega,
+        logradouro: formData.logradouro,
+        numero: formData.numero,
+        cep: formData.cep,
+        cidade: formData.cidade,
+        estado: formData.estado,
       });
 
       setRestaurantId(response.restaurante?.id ?? restaurantId);
@@ -127,9 +150,9 @@ export default function Page() {
     <div className="space-y-8">
       <section className="rounded-[2rem] border border-orange-100 bg-white p-6 shadow-[0_14px_40px_rgba(249,115,22,0.10)]">
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">Cadastro do restaurante</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Envie as informações do seu restaurante para análise</h1>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Envie os dados do restaurante e do endereço em uma única etapa</h1>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
-          Aqui você preenche os dados que serão salvos no banco e depois revisados pelo administrador.
+          Aqui você preenche o cadastro completo que será salvo no banco e depois revisado pelo administrador.
         </p>
 
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -151,16 +174,7 @@ export default function Page() {
 
       <section className="grid gap-6 xl:grid-cols-[1fr_0.8fr]">
         <form onSubmit={handleSubmit} className="rounded-[2rem] border border-dashed border-orange-200 bg-orange-50/50 p-6">
-          {!canEdit ? (
-            <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-              Você ainda não está autenticado como restaurante nesta sessão. Faça login para salvar os dados.
-              <div className="mt-3">
-                <Link href="/login" className="inline-flex rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600">
-                  Ir para login
-                </Link>
-              </div>
-            </div>
-          ) : null}
+          
 
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Dados para análise</h2>
@@ -190,6 +204,30 @@ export default function Page() {
             <InputField label="Tempo de entrega" value={formData.tempo_entrega} onChange={(value) => setFormData((current) => ({ ...current, tempo_entrega: value }))} placeholder="00:30" />
           </div>
 
+          <div className="mt-8 rounded-[2rem] border border-white bg-white p-5 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
+                <MdOutlineLocationOn className="size-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Endereço principal</h3>
+                <p className="text-sm text-slate-600">Esses dados também serão analisados pelo administrador e usados na vitrine.</p>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              {addressFields.map((field) => (
+                <InputField
+                  key={field.key}
+                  label={field.label}
+                  value={formData[field.key]}
+                  onChange={(value) => setFormData((current) => ({ ...current, [field.key]: value }))}
+                  placeholder={field.placeholder}
+                />
+              ))}
+            </div>
+          </div>
+
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               type="submit"
@@ -199,9 +237,7 @@ export default function Page() {
               <MdOutlineSave />
               {saving ? 'Salvando...' : 'Enviar para análise'}
             </button>
-            <Link href="/restaurante" className="rounded-full border border-orange-200 bg-white px-5 py-3 text-sm font-semibold text-orange-700 transition hover:bg-orange-50">
-              Voltar para área do restaurante
-            </Link>
+            
           </div>
 
           <p className="mt-4 text-sm text-slate-600">
@@ -238,6 +274,8 @@ export default function Page() {
               <div className="mt-4 space-y-2 text-sm text-slate-600">
                 <p>Horário: {formData.horario_atendimento || 'não informado'}</p>
                 <p>Tempo de entrega: {formData.tempo_entrega || 'não informado'}</p>
+                <p>Endereço: {formData.logradouro || 'logradouro'}{formData.numero ? `, ${formData.numero}` : ''}</p>
+                <p>{formData.cidade || 'cidade'} / {formData.estado || 'estado'} {formData.cep ? `- ${formData.cep}` : ''}</p>
               </div>
             </div>
           </div>

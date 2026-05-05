@@ -2,20 +2,30 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { clearAuthSession, loadAuthSession } from "../../lib/session";
-import { MdAdminPanelSettings, MdPeople, MdLocalShipping, MdSecurity, MdStorefront, MdLogout } from "react-icons/md";
+import { MdAdminPanelSettings, MdLocalShipping, MdSecurity, MdStorefront, MdLogout } from "react-icons/md";
+import { TbCategoryFilled } from "react-icons/tb";
 
 const navigationItems = [
   { href: '/admin', label: 'Dashboard', icon: MdAdminPanelSettings },
   { href: '/admin/restaurantes', label: 'Restaurantes', icon: MdStorefront },
-  { href: '/admin/usuarios', label: 'Usuários', icon: MdPeople },
-  { href: '/admin/perfis', label: 'Perfis', icon: MdSecurity },
   { href: '/admin/entregadores', label: 'Entregadores', icon: MdLocalShipping },
+  { href: '/admin/categorias', label: 'Categorias', icon: TbCategoryFilled },
+  { href: '/admin/perfis', label: 'Perfis', icon: MdSecurity },
 ];
 
 export default function AdminLayout({ children }) {
   const router = useRouter();
+  const pathname = usePathname();
+
+  function isActiveRoute(href) {
+    if (href === '/admin') {
+      return pathname === '/admin';
+    }
+
+    return pathname.startsWith(href);
+  }
 
   useEffect(() => {
     const session = loadAuthSession();
@@ -43,14 +53,15 @@ export default function AdminLayout({ children }) {
           <nav className="mt-6 space-y-2">
             {navigationItems.map((item) => {
               const Icon = item.icon;
+              const isActive = isActiveRoute(item.href);
 
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center gap-3 rounded-2xl border border-transparent px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
+                  className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium transition ${isActive ? 'border-orange-200 bg-orange-50 text-orange-700 shadow-sm' : 'border-transparent text-slate-700 hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700'}`}
                 >
-                  <Icon className="size-5" />
+                  <Icon className={`size-5 ${isActive ? 'text-orange-600' : 'text-slate-500'}`} />
                   <span>{item.label}</span>
                 </Link>
               );
