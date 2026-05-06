@@ -11,6 +11,12 @@ const Pagamento = sequelize.define(
             autoIncrement: true,
             primaryKey: true
         }
+        ,
+        valor: {
+            type: DataTypes.DECIMAL(10, 2),
+            allowNull: false,
+            defaultValue: 0.0,
+        }
     },
     {
         freezeTableName: true,

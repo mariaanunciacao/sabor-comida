@@ -56,8 +56,9 @@ export default function Page() {
   useEffect(() => {
     async function loadRestaurant() {
       const session = loadAuthSession();
+      const tipo = session?.tipo ?? session?.perfil;
 
-      if (!session?.token || session.perfil !== 'restaurante') {
+      if (!session?.token || (tipo !== 'restaurante' && tipo !== 'restaurante_pendente')) {
         setCanEdit(false);
         setMessage('Acesse com um usuário de restaurante para editar estas informações.');
         setLoading(false);
@@ -67,29 +68,27 @@ export default function Page() {
       setCanEdit(true);
 
       try {
-        if (!session.id_restaurante) {
-          setMessage('Sua conta de restaurante ainda não está vinculada a um restaurante no banco.');
-          setLoading(false);
-          return;
-        }
-
         const restaurant = await getMyRestaurant(session.token);
-        setRestaurantId(restaurant.id);
+        setRestaurantId(restaurant.restaurante?.id ?? restaurant.id ?? null);
         setStatusAprovacao(restaurant.statusAprovacao ?? restaurant.status_aprovacao ?? 'pendente');
         setFormData({
-          cnpj: restaurant.cnpj ?? '',
-          nome_restaurante: restaurant.nome_restaurante ?? '',
-          descricao: restaurant.descricao ?? '',
-          logo_path: restaurant.logo_path ?? '',
-          banner_path: restaurant.banner_path ?? '',
-          horario_atendimento: restaurant.horario_atendimento ?? '',
-          tempo_entrega: normalizeTimeValue(restaurant.tempo_entrega),
-          logradouro: restaurant.enderecoPrincipal?.logradouro ?? '',
-          numero: restaurant.enderecoPrincipal?.numero ?? '',
-          cep: restaurant.enderecoPrincipal?.cep ?? '',
-          cidade: restaurant.enderecoPrincipal?.cidade ?? '',
-          estado: restaurant.enderecoPrincipal?.estado ?? '',
+          cnpj: restaurant.restaurante?.cnpj ?? restaurant.cnpj ?? '',
+          nome_restaurante: restaurant.restaurante?.nome_restaurante ?? restaurant.nome_restaurante ?? '',
+          descricao: restaurant.restaurante?.descricao ?? restaurant.descricao ?? '',
+          logo_path: restaurant.restaurante?.logo_path ?? restaurant.logo_path ?? '',
+          banner_path: restaurant.restaurante?.banner_path ?? restaurant.banner_path ?? '',
+          horario_atendimento: restaurant.restaurante?.horario_atendimento ?? restaurant.horario_atendimento ?? '',
+          tempo_entrega: normalizeTimeValue(restaurant.restaurante?.tempo_entrega ?? restaurant.tempo_entrega),
+          logradouro: restaurant.restaurante?.enderecoPrincipal?.logradouro ?? restaurant.enderecoPrincipal?.logradouro ?? '',
+          numero: restaurant.restaurante?.enderecoPrincipal?.numero ?? restaurant.enderecoPrincipal?.numero ?? '',
+          cep: restaurant.restaurante?.enderecoPrincipal?.cep ?? restaurant.enderecoPrincipal?.cep ?? '',
+          cidade: restaurant.restaurante?.enderecoPrincipal?.cidade ?? restaurant.enderecoPrincipal?.cidade ?? '',
+          estado: restaurant.restaurante?.enderecoPrincipal?.estado ?? restaurant.enderecoPrincipal?.estado ?? '',
         });
+
+        if (!restaurant.restaurante) {
+          setMessage(restaurant.message ?? 'Preencha os dados do restaurante para enviar à análise.');
+        }
       } catch (error) {
         setMessage(error?.message ?? 'Não foi possível carregar os dados do restaurante.');
       } finally {
@@ -129,7 +128,7 @@ export default function Page() {
       });
 
       setRestaurantId(response.restaurante?.id ?? restaurantId);
-      setStatusAprovacao(response.restaurante?.statusAprovacao ?? response.restaurante?.status_aprovacao ?? 'pendente');
+      setStatusAprovacao(response.statusAprovacao ?? response.restaurante?.statusAprovacao ?? response.restaurante?.status_aprovacao ?? 'pendente');
       setMessage('Informações enviadas para análise e salvas no banco.');
     } catch (error) {
       setMessage(error?.message ?? 'Não foi possível salvar as informações agora.');

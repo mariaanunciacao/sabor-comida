@@ -30,7 +30,12 @@ export default function AdminLayout({ children }) {
   useEffect(() => {
     const session = loadAuthSession();
 
-    if (session?.perfil !== 'admin') {
+    if (session?.tipo === 'restaurante_pendente') {
+      router.replace('/restaurante');
+      return;
+    }
+
+    if (session?.tipo !== 'admin' && session?.perfil !== 'admin') {
       router.replace('/login');
     }
   }, [router]);

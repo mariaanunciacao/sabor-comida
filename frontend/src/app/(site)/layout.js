@@ -19,7 +19,6 @@ export default function SiteLayout({ children }) {
             <Link href="/" className="whitespace-nowrap text-(--color-texto-nav) hover:text-(--color-texto-nav-hover)">Inicio</Link>
             <Link href="/restaurantes" className="whitespace-nowrap text-(--color-texto-nav) hover:text-(--color-texto-nav-hover)">Restaurantes</Link>
             <Link href="/mais-pedidos" className="whitespace-nowrap text-(--color-texto-nav) hover:text-(--color-texto-nav-hover)">Mais Pedidos</Link>
-            <Link href="/restaurante" className="whitespace-nowrap text-(--color-texto-nav) hover:text-(--color-texto-nav-hover)">Área do restaurante</Link>
 
             <div className="relative w-[350px] shrink-0">
               <div
@@ -63,7 +62,6 @@ export default function SiteLayout({ children }) {
             <Link href="/" className="block py-2 text-(--color-texto-nav)">Inicio</Link>
             <Link href="/restaurantes" className="block py-2 text-(--color-texto-nav)">Restaurantes</Link>
             <Link href="/mais-pedidos" className="block py-2 text-(--color-texto-nav)">Mais Pedidos</Link>
-            <Link href="/restaurante" className="block py-2 text-(--color-texto-nav)">Área do restaurante</Link>
             <a href="#" className="block py-2 text-(--color-texto-nav)">Pesquise por Produtos ou Restaurantes</a>
             <AuthActions mobile />
           </div>

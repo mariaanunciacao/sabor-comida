@@ -7,12 +7,19 @@ import { loginUser } from "../../lib/api";
 import { loadAuthSession, saveAuthSession } from "../../lib/session";
 
 function redirectByProfile(router, session) {
-  if (session.perfil === 'restaurante') {
+  const tipo = session.tipo ?? session.perfil;
+
+  if (tipo === 'restaurante_pendente') {
+    router.replace('/restaurante');
+    return;
+  }
+
+  if (tipo === 'restaurante') {
     router.replace(`/restaurante?restaurantId=${session.id_restaurante}`);
     return;
   }
 
-  if (session.perfil === 'admin') {
+  if (tipo === 'admin') {
     router.replace('/admin');
     return;
   }
@@ -30,7 +37,7 @@ export default function Page() {
   useEffect(() => {
     const session = loadAuthSession();
 
-    if (!session?.perfil) {
+    if (!session?.tipo && !session?.perfil) {
       return;
     }
 
@@ -47,7 +54,8 @@ export default function Page() {
 
       saveAuthSession({
         token: response.token,
-        perfil: response.perfil,
+        tipo: response.tipo ?? response.perfil,
+        perfil: response.perfil ?? response.tipo,
         perfis: response.perfis,
         id_restaurante: response.id_restaurante,
         usuario: response.usuario,

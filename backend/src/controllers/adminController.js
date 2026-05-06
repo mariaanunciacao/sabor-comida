@@ -1,4 +1,4 @@
-import { Perfil, Restaurante, Usuario, UsuarioPerfil, sequelize } from '../models/index.js';
+import { Perfil, Restaurante, Usuario, sequelize } from '../models/index.js';
 
 function toPlainRestaurant(restaurante) {
     const data = restaurante.toJSON();
@@ -12,12 +12,6 @@ function toPlainRestaurant(restaurante) {
 export async function listarUsuarios(req, res) {
     const usuarios = await Usuario.findAll({
         include: [
-            {
-                model: UsuarioPerfil,
-                as: 'usuarios_perfis',
-                include: [{ model: Perfil, as: 'perfis', attributes: ['id', 'nome', 'perfil'] }],
-                attributes: ['id'],
-            },
             {
                 model: Restaurante,
                 as: 'restaurantes',
@@ -33,9 +27,7 @@ export async function listarUsuarios(req, res) {
 
         return {
             ...data,
-            perfis: (data.usuarios_perfis ?? [])
-                .map((relacao) => relacao.perfis)
-                .filter(Boolean),
+            tipo: data.tipo ?? 'cliente',
         };
     }));
 }
@@ -142,24 +134,28 @@ export async function atualizarStatusRestaurante(req, res) {
         return res.status(404).json({ message: 'Restaurante não encontrado.' });
     }
 
-    const statusAtual = restaurante.status_aprovacao ?? 'pendente';
-    const trocaDiretaEntreRevisados = (
-        (statusAtual === 'aprovado' && statusAprovacao === 'rejeitado')
-        || (statusAtual === 'rejeitado' && statusAprovacao === 'aprovado')
-    );
+    const usuario = await Usuario.findByPk(restaurante.idUsuario);
 
-    if (trocaDiretaEntreRevisados) {
-        return res.status(409).json({
-            message: 'Para alternar entre aprovado e reprovado, volte o restaurante para pendente primeiro.',
-        });
-    }
+    await sequelize.transaction(async (transaction) => {
+        restaurante.status_aprovacao = statusAprovacao;
+        await restaurante.save({ transaction });
 
-    restaurante.status_aprovacao = statusAprovacao;
-    await restaurante.save();
+        if (statusAprovacao === 'aprovado' && usuario) {
+            await usuario.update({ tipo: 'restaurante' }, { transaction });
+        }
+    });
 
     return res.json({
         message: 'Status do restaurante atualizado com sucesso.',
         restaurante: toPlainRestaurant(restaurante),
+        usuario: usuario
+            ? {
+                id: usuario.id,
+                nome: usuario.nome,
+                email: usuario.email,
+                tipo: usuario.tipo === 'restaurante' || statusAprovacao === 'aprovado' ? 'restaurante' : usuario.tipo,
+            }
+            : null,
     });
 }
 
@@ -188,26 +184,16 @@ export async function atualizarPerfisUsuario(req, res) {
     }
 
     await sequelize.transaction(async (transaction) => {
-        await UsuarioPerfil.destroy({
-            where: { idUsuario: usuarioId },
-            transaction,
-        });
-
-        await UsuarioPerfil.create(
-            {
-                idUsuario: usuarioId,
-                idPerfil: perfilId,
-            },
-            { transaction },
-        );
+        await usuario.setPerfis([perfil], { transaction });
     });
 
     const updatedUser = await Usuario.findByPk(usuarioId, {
         include: [
             {
-                model: UsuarioPerfil,
-                as: 'usuarios_perfis',
-                include: [{ model: Perfil, as: 'perfis', attributes: ['id', 'nome', 'perfil'] }],
+                model: Perfil,
+                as: 'perfis',
+                attributes: ['id', 'nome', 'perfil'],
+                through: { attributes: [] },
                 attributes: ['id'],
             },
         ],
@@ -219,9 +205,7 @@ export async function atualizarPerfisUsuario(req, res) {
         message: 'Perfil do usuário atualizado com sucesso.',
         usuario: {
             ...data,
-            perfis: (data.usuarios_perfis ?? [])
-                .map((relacao) => relacao.perfis)
-                .filter(Boolean),
+            perfis: data.perfis ?? [],
         },
     });
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { registerUser } from "../../lib/api";
-import { clearAuthSession, loadAuthSession } from "../../lib/session";
+import { clearAuthSession, loadAuthSession, saveAuthSession } from "../../lib/session";
 
 export default function Page() {
   const router = useRouter();
@@ -12,6 +12,7 @@ export default function Page() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [tipo, setTipo] = useState('cliente');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [successToken, setSuccessToken] = useState('');
@@ -39,11 +40,26 @@ export default function Page() {
     }
 
     try {
-      const response = await registerUser({ nome, email, senha });
+      const response = await registerUser({ nome, email, senha, tipo });
 
       clearAuthSession();
+      saveAuthSession({
+        token: response.token,
+        tipo: response.tipo ?? response.perfil,
+        perfil: response.perfil ?? response.tipo,
+        perfis: response.perfis,
+        id_restaurante: response.id_restaurante,
+        usuario: response.usuario,
+        restaurante: response.restaurante,
+      });
       setSuccessToken(response.token);
       setSuccessEmail(response.usuario?.email ?? email);
+
+      if ((response.tipo ?? response.perfil) === 'restaurante_pendente' || (response.tipo ?? response.perfil) === 'cliente') {
+        router.push('/restaurante');
+        return;
+      }
+
       setMessage('Conta criada com sucesso. Agora faça login com o usuário recém-criado.');
     } catch (error) {
       setMessage(error?.message ?? 'Não foi possível criar sua conta agora.');
@@ -143,6 +159,19 @@ export default function Page() {
                 placeholder="Repita sua senha"
                 className="input w-full rounded-2xl border border-orange-100 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-[color:var(--color-botao-pesquisa)] focus:ring-2 focus:ring-[color:var(--color-botao-pesquisa)]/20"
               />
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-gray-700">Tipo de cadastro</p>
+              <select
+                value={tipo}
+                onChange={(event) => setTipo(event.target.value)}
+                className="input w-full rounded-2xl border border-orange-100 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-[color:var(--color-botao-pesquisa)] focus:ring-2 focus:ring-[color:var(--color-botao-pesquisa)]/20"
+              >
+                <option value="cliente">Cliente</option>
+                <option value="restaurante_pendente">Restaurante</option>
+              </select>
+              <p className="text-xs text-gray-500">Restaurante inicia com cadastro pendente e depois envia os dados para análise.</p>
             </div>
 
             <button

@@ -1,5 +1,5 @@
 import { sequelize } from '../config/index.js';
-import crypto from 'node:crypto';
+import bcrypt from 'bcryptjs';
 import Pessoa from './UsuarioModel.js';
 import Usuario from './UsuarioModel.js';
 import Perfil from './PerfilModel.js';
@@ -24,7 +24,60 @@ import Avaliacao from './AvaliacaoModel.js';
 import RecuperacaoSenha from './RecuperacaoSenhaModel.js';
 
 function hashPassword(password) {
-    return crypto.createHash('sha256').update(String(password)).digest('hex');
+    return bcrypt.hashSync(String(password), 10);
+}
+
+function resolveUsuarioTipo(usuario) {
+    if (usuario.tipo) {
+        return usuario.tipo;
+    }
+
+    const perfis = (usuario.perfis ?? []).map((perfil) => perfil.perfil);
+
+    if (perfis.includes('admin')) {
+        return 'admin';
+    }
+
+    if (perfis.includes('restaurante')) {
+        return 'restaurante';
+    }
+
+    if (perfis.includes('restaurante_pendente')) {
+        return 'restaurante_pendente';
+    }
+
+    if ((usuario.restaurantes ?? []).length > 0) {
+        return 'restaurante';
+    }
+
+    return 'cliente';
+}
+
+async function backfillUsuarioTipos() {
+    const usuarios = await Usuario.findAll({
+        include: [
+            {
+                model: Perfil,
+                as: 'perfis',
+                attributes: ['perfil'],
+                through: { attributes: [] },
+            },
+            {
+                model: Restaurante,
+                as: 'restaurantes',
+                attributes: ['id'],
+                required: false,
+            },
+        ],
+    });
+
+    for (const usuario of usuarios) {
+        const tipo = resolveUsuarioTipo(usuario);
+
+        if (usuario.tipo !== tipo) {
+            await usuario.update({ tipo });
+        }
+    }
 }
 
 Usuario.hasMany(Restaurante, {
@@ -41,6 +94,36 @@ Usuario.hasOne(Entregador, {
     foreignKey: {
         name: 'idUsuario',
         allowNull: true,
+        field: 'id_usuario',
+    },
+});
+
+Usuario.belongsToMany(Perfil, {
+    through: UsuarioPerfil,
+    as: 'perfis',
+    foreignKey: {
+        name: 'idUsuario',
+        allowNull: false,
+        field: 'id_usuario',
+    },
+    otherKey: {
+        name: 'idPerfil',
+        allowNull: false,
+        field: 'id_perfil',
+    },
+});
+
+Perfil.belongsToMany(Usuario, {
+    through: UsuarioPerfil,
+    as: 'usuarios',
+    foreignKey: {
+        name: 'idPerfil',
+        allowNull: false,
+        field: 'id_perfil',
+    },
+    otherKey: {
+        name: 'idUsuario',
+        allowNull: false,
         field: 'id_usuario',
     },
 });
@@ -147,24 +230,6 @@ Usuario.hasMany(Endereco, {
     }
 });
 
-Usuario.hasMany(UsuarioPerfil, {
-    as: 'usuarios_perfis',
-    foreignKey: {
-        name: 'idUsuario',
-        allowNull: false,
-        field: 'id_usuario'
-    }
-});
-
-Perfil.hasMany(UsuarioPerfil, {
-    as: 'usuarios_perfis',
-    foreignKey: {
-        name: 'idPerfil',
-        allowNull: false,
-        field: 'id_perfil'
-    }
-});
-
 Restaurante.hasMany(RestauranteEndereco, {
     as: 'enderecos_restaurante',
     foreignKey: {
@@ -242,7 +307,6 @@ export {
     Pessoa,
     Usuario,
     Perfil,
-    UsuarioPerfil,
     Cupom,
     Categoria,
     Endereco,
@@ -261,10 +325,12 @@ export {
     Favorito,
     Avaliacao,
     RecuperacaoSenha,
+    UsuarioPerfil,
 };
 
 export async function initializeModels() {
     await sequelize.sync({ alter: { drop: false } });
+    await backfillUsuarioTipos();
 
     await Perfil.findOrCreate({
         where: { perfil: 'admin' },
@@ -280,6 +346,7 @@ export async function initializeModels() {
                 nome: 'king',
                 email: 'king@admin.local',
                 passwordHash: hashPassword('king'),
+                tipo: 'admin',
             },
         });
 
@@ -287,6 +354,7 @@ export async function initializeModels() {
             await kingUser.update({
                 nome: 'king',
                 passwordHash: hashPassword('king'),
+                tipo: 'admin',
             });
         }
 

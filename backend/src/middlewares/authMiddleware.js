@@ -17,6 +17,10 @@ function extractBearerToken(authorizationHeader) {
 }
 
 function getUserRoles(payload) {
+    if (payload?.tipo) {
+        return [payload.tipo];
+    }
+
     if (Array.isArray(payload?.perfis) && payload.perfis.length > 0) {
         return payload.perfis;
     }
@@ -57,11 +61,15 @@ export function authorizeRestaurantOwnership(req, res, next) {
         return res.status(401).json({ message: 'Token não informado.' });
     }
 
-    if (req.auth.perfil === 'admin') {
+    if (req.auth.tipo === 'admin' || req.auth.perfil === 'admin') {
         return next();
     }
 
-    if (req.auth.perfil !== 'restaurante' || !req.auth.id_restaurante) {
+    if (req.auth.tipo !== 'restaurante' && req.auth.perfil !== 'restaurante') {
+        return res.status(403).json({ message: 'Somente o restaurante responsável pode acessar este recurso.' });
+    }
+
+    if (!req.auth.id_restaurante) {
         return res.status(403).json({ message: 'Somente o restaurante responsável pode acessar este recurso.' });
     }
 

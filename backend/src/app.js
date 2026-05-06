@@ -6,6 +6,10 @@ import commerceRoutes from './routes/commerceRoutes.js';
 import restauranteRoutes from './routes/restauranteRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import pagamentosRoutes from './routes/pagamentosRoutes.js';
+import restaurantePedidosRoutes from './routes/restaurantePedidosRoutes.js';
+import restauranteConfigRoutes from './routes/restauranteConfigRoutes.js';
+import restauranteMenuRoutes from './routes/restauranteMenuRoutes.js';
 
 const app = express();
 
@@ -17,6 +21,10 @@ app.use('/api', passwordRecoveryRoutes);
 app.use('/api', commerceRoutes);
 app.use('/api', restauranteRoutes);
 app.use('/api', adminRoutes);
+app.use('/api', pagamentosRoutes);
+app.use('/api', restaurantePedidosRoutes);
+app.use('/api', restauranteConfigRoutes);
+app.use('/api', restauranteMenuRoutes);
 
 app.get('/', (req, res) => {
   res.send('API Sabor Comida funcionando 🍔');

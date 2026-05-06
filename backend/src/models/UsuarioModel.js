@@ -22,6 +22,11 @@ const Usuario = sequelize.define(
             type: DataTypes.STRING(500),
             allowNull: true,
         },
+        tipo: {
+            type: DataTypes.ENUM('admin', 'cliente', 'restaurante', 'restaurante_pendente'),
+            allowNull: false,
+            defaultValue: 'cliente',
+        },
         passwordHash: {
             type: DataTypes.STRING(1000),
             allowNull: false,
