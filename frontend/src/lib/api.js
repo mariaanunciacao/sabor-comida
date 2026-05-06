@@ -274,3 +274,20 @@ export function getFeaturedProducts(restaurants) {
         })
         .sort((produtoA, produtoB) => Number(produtoA.id.split('-').pop()) - Number(produtoB.id.split('-').pop()));
 }
+
+export async function getMyPayments(token) {
+    return fetchJson('/restaurantes/meu/pagamentos', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+}
+
+export async function markPaymentPaid(token, paymentId) {
+    return fetchJson(`/restaurantes/meu/pagamentos/${paymentId}/pagar`, {
+        method: 'PATCH',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+}
