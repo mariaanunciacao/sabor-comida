@@ -1,25 +1,74 @@
-import { getCategories, getFeaturedProducts, getRestaurants, getRestaurantImage } from "../../lib/api";
+"use client";
+
+import { useEffect, useState } from "react";
+
+import {
+  addToCartCommerce,
+  getCategories,
+  getFeaturedProducts,
+  getRestaurants,
+  getRestaurantImage,
+} from "../../lib/api";
+import { loadAuthSession } from "../../lib/session";
+import { useRouter } from 'next/navigation';
+
 import Link from "next/link";
 import Image from "next/image";
 
-export default async function Home() {
-  let restaurantes = [];
-  let categorias = [];
+export default function Home() {
+  const router = useRouter();
+  const [restaurantes, setRestaurantes] = useState([]);
+  const [categorias, setCategorias] = useState([]);
 
-  try {
-    restaurantes = await getRestaurants();
-  } catch {
-    restaurantes = [];
-  }
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const restaurantesData = await getRestaurants();
+        setRestaurantes(restaurantesData);
+      } catch {
+        setRestaurantes([]);
+      }
 
-  try {
-    categorias = await getCategories();
-  } catch {
-    categorias = [];
-  }
+      try {
+        const categoriasData = await getCategories();
+        setCategorias(categoriasData);
+      } catch {
+        setCategorias([]);
+      }
+    }
+
+    loadData();
+  }, []);
 
   const restaurantesEmAlta = restaurantes.slice(0, 9);
   const recomendados = getFeaturedProducts(restaurantes).slice(0, 8);
+
+    async function handleAddToCart(item) {
+    try {
+      const session = loadAuthSession();
+
+      const token = session?.token ?? window.localStorage.getItem("token");
+
+      if (!token) {
+        alert("Você precisa estar logado.");
+        return;
+      }
+
+      const usuarioId = session?.usuario?.id;
+
+      if (!usuarioId) {
+        alert('Usuário não encontrado na sessão.');
+        return;
+      }
+
+      await addToCartCommerce(token, usuarioId, item.restaurantId, item.productId, 1);
+
+        // navegar para a página do carrinho
+        router.push('/carrinho');
+    } catch (error) {
+      alert(error.message || "Erro ao adicionar ao carrinho.");
+    }
+  }
 
   return (
     <main className="flex-1 bg-(--color-fundo-app) flex items-start justify-stretch pt-4">
@@ -90,7 +139,7 @@ export default async function Home() {
 
         <div className="container mx-auto grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-4">
           {recomendados.map((item) => (
-            <article key={item.name} className="group overflow-hidden rounded-[1.5rem] border border-white/80 bg-white/85 shadow-[0_14px_40px_rgba(249,115,22,0.12)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(245,128,103,0.24)]">
+            <article key={item.id} className="group overflow-hidden rounded-[1.5rem] border border-white/80 bg-white/85 shadow-[0_14px_40px_rgba(249,115,22,0.12)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(245,128,103,0.24)]">
               <div className="relative h-48 overflow-hidden">
                 <Image
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
@@ -113,7 +162,7 @@ export default async function Home() {
                   <span className="rounded-full bg-[color:var(--color-card-recomendado)]/25 px-3 py-1 text-sm font-semibold text-gray-900 ring-1 ring-[color:var(--color-card-recomendado)]/40">
                     {item.price}
                   </span>
-                  <button className="rounded-xl bg-(--color-botao-pedir-agora) px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-[color:var(--color-botao-pedir-agora)]/90 hover:shadow-md active:translate-y-0">
+                  <button  onClick={() => handleAddToCart(item)} className="rounded-xl bg-(--color-botao-pedir-agora) px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-[color:var(--color-botao-pedir-agora)]/90 hover:shadow-md active:translate-y-0">
                     Pedir Agora
                   </button>
                 </div>

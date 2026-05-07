@@ -1,79 +1,194 @@
-import { Produto, Menu } from '../models/index.js';
+import { Produto, Menu, Categoria } from '../models/index.js';
 
 function numeric(v) {
   const n = Number(v);
   return Number.isInteger(n) ? n : null;
 }
 
-export const listarProdutos = async (req, res) => {
-  const restauranteId = req.restaurante.id;
-
-  const produtos = await Produto.findAll({
-    include: [{ model: Menu, as: 'menu' }],
-    order: [['id', 'ASC']],
+async function buscarOuCriarMenu(restauranteId) {
+  let menu = await Menu.findOne({
+    where: {
+      idRestaurante: restauranteId,
+    },
   });
 
-  // filter by restaurante
-  const meus = produtos.filter((p) => p.menu?.idRestaurante === restauranteId);
-  res.json(meus);
+  if (!menu) {
+    menu = await Menu.create({
+      nome_menu: 'Cardápio Principal',
+      descricao: 'Cardápio do restaurante',
+      idRestaurante: restauranteId,
+    });
+  }
+
+  return menu;
+}
+
+export const listarProdutos = async (req, res) => {
+  try {
+    const restauranteId = req.restaurante.id;
+
+    const menu = await buscarOuCriarMenu(restauranteId);
+
+    const produtos = await Produto.findAll({
+      where: {
+        idMenu: menu.id,
+      },
+      include: [
+        {
+          model: Categoria,
+          as: 'categoria',
+        },
+      ],
+      order: [['id', 'ASC']],
+    });
+
+    return res.json(produtos);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: 'Erro ao listar produtos.',
+    });
+  }
 };
 
 export const criarProduto = async (req, res) => {
-  const restauranteId = req.restaurante.id;
-  const { nome_produto, descricao, preco, ingredientes, imagem_path, ativo, idCategoria, idMenu } = req.body;
+  try {
+    const restauranteId = req.restaurante.id;
 
-  const menu = await Menu.findByPk(idMenu);
-  if (!menu || menu.idRestaurante !== restauranteId) {
-    return res.status(400).json({ message: 'Menu inválido para este restaurante.' });
+    const {
+      nome_produto,
+      descricao,
+      preco,
+      ingredientes,
+      imagem_path,
+      ativo,
+      idCategoria,
+    } = req.body;
+
+    const menu = await buscarOuCriarMenu(restauranteId);
+
+    const produto = await Produto.create({
+      nome_produto,
+      descricao,
+      preco,
+      ingredientes,
+      imagem_path: imagem_path ?? null,
+      ativo: ativo ?? true,
+      idCategoria,
+      idMenu: menu.id,
+    });
+
+    return res.status(201).json({
+      message: 'Produto criado com sucesso.',
+      produto,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: 'Erro ao criar produto.',
+    });
   }
-
-  const produto = await Produto.create({
-    nome_produto,
-    descricao,
-    preco,
-    ingredientes,
-    imagem_path: imagem_path ?? null,
-    ativo: ativo ?? true,
-    idCategoria,
-    idMenu,
-  });
-
-  res.status(201).json({ message: 'Produto criado.', produto });
 };
 
 export const atualizarProduto = async (req, res) => {
-  const restauranteId = req.restaurante.id;
-  const produtoId = numeric(req.params.id);
-  if (!produtoId) return res.status(400).json({ message: 'Produto inválido.' });
+  try {
+    const restauranteId = req.restaurante.id;
 
-  const produto = await Produto.findByPk(produtoId, { include: [{ model: Menu, as: 'menu' }] });
-  if (!produto || produto.menu?.idRestaurante !== restauranteId) {
-    return res.status(404).json({ message: 'Produto não encontrado para este restaurante.' });
-  }
+    const produtoId = numeric(req.params.id);
 
-  const payload = { ...req.body };
-  // prevent changing menu to another restaurant's menu
-  if (payload.idMenu) {
-    const menu = await Menu.findByPk(payload.idMenu);
-    if (!menu || menu.idRestaurante !== restauranteId) {
-      return res.status(400).json({ message: 'Menu inválido para este restaurante.' });
+    if (!produtoId) {
+      return res.status(400).json({
+        message: 'Produto inválido.',
+      });
     }
-  }
 
-  await produto.update(payload);
-  res.json({ message: 'Produto atualizado.', produto });
+    const menu = await buscarOuCriarMenu(restauranteId);
+
+    const produto = await Produto.findOne({
+      where: {
+        id: produtoId,
+        idMenu: menu.id,
+      },
+    });
+
+    if (!produto) {
+      return res.status(404).json({
+        message: 'Produto não encontrado.',
+      });
+    }
+
+    const {
+      nome_produto,
+      descricao,
+      preco,
+      ingredientes,
+      imagem_path,
+      ativo,
+      idCategoria,
+    } = req.body;
+
+    await produto.update({
+      nome_produto,
+      descricao,
+      preco,
+      ingredientes,
+      imagem_path,
+      ativo,
+      idCategoria,
+    });
+
+    return res.json({
+      message: 'Produto atualizado com sucesso.',
+      produto,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: 'Erro ao atualizar produto.',
+    });
+  }
 };
 
 export const excluirProduto = async (req, res) => {
-  const restauranteId = req.restaurante.id;
-  const produtoId = numeric(req.params.id);
-  if (!produtoId) return res.status(400).json({ message: 'Produto inválido.' });
+  try {
+    const restauranteId = req.restaurante.id;
 
-  const produto = await Produto.findByPk(produtoId, { include: [{ model: Menu, as: 'menu' }] });
-  if (!produto || produto.menu?.idRestaurante !== restauranteId) {
-    return res.status(404).json({ message: 'Produto não encontrado para este restaurante.' });
+    const produtoId = numeric(req.params.id);
+
+    if (!produtoId) {
+      return res.status(400).json({
+        message: 'Produto inválido.',
+      });
+    }
+
+    const menu = await buscarOuCriarMenu(restauranteId);
+
+    const produto = await Produto.findOne({
+      where: {
+        id: produtoId,
+        idMenu: menu.id,
+      },
+    });
+
+    if (!produto) {
+      return res.status(404).json({
+        message: 'Produto não encontrado.',
+      });
+    }
+
+    await produto.destroy();
+
+    return res.json({
+      message: 'Produto excluído com sucesso.',
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: 'Erro ao excluir produto.',
+    });
   }
-
-  await produto.destroy();
-  res.json({ message: 'Produto excluído.' });
 };

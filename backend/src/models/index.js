@@ -22,6 +22,7 @@ import Carrinho from './CarrinhoModel.js';
 import Favorito from './FavoritoModel.js';  
 import Avaliacao from './AvaliacaoModel.js';    
 import RecuperacaoSenha from './RecuperacaoSenhaModel.js';
+import ItemCarrinho from './ItemCarrinhoModel.js';
 
 function hashPassword(password) {
     return bcrypt.hashSync(String(password), 10);
@@ -155,15 +156,6 @@ Restaurante.hasMany(Pedido, {
     }
 });
 
-Pedido.hasMany(Carrinho, {
-    as: 'carrinhos',
-    foreignKey: {
-        name: 'idPedido',
-        allowNull: true,
-        field: 'id_pedido'
-    }
-});
-
 Usuario.hasMany(Avaliacao, {
     as: 'avaliacoes',
     foreignKey: {
@@ -209,6 +201,24 @@ Menu.hasMany(Produto, {
         name: 'idMenu',
         allowNull: false,
         field: 'id_menu'
+    }
+});
+
+Produto.hasMany(ItemCarrinho, {
+    as: 'itens_carrinho',
+    foreignKey: {
+        name: 'idProduto',
+        allowNull: false,
+        field: 'id_produto'
+    }
+});
+
+ItemCarrinho.belongsTo(Produto, {
+    as: 'produto_carrinho',
+    foreignKey: {
+        name: 'idProduto',
+        allowNull: false,
+        field: 'id_produto'
     }
 });
 
@@ -284,12 +294,21 @@ Restaurante.hasMany(Carrinho, {
     }
 });
 
-Produto.hasMany(Carrinho, {
-    as: 'carrinhos',
+Carrinho.hasMany(ItemCarrinho, {
+    as: 'itens',
     foreignKey: {
-        name: 'idProduto',
+        name: 'idCarrinho',
         allowNull: false,
-        field: 'id_produto'
+        field: 'id_carrinho'
+    }
+});
+
+ItemCarrinho.belongsTo(Carrinho, {
+    as: 'carrinho_item',
+    foreignKey: {
+        name: 'idCarrinho',
+        allowNull: false,
+        field: 'id_carrinho'
     }
 });
 
@@ -326,6 +345,7 @@ export {
     Avaliacao,
     RecuperacaoSenha,
     UsuarioPerfil,
+    ItemCarrinho,
 };
 
 export async function initializeModels() {

@@ -10,6 +10,7 @@ import pagamentosRoutes from './routes/pagamentosRoutes.js';
 import restaurantePedidosRoutes from './routes/restaurantePedidosRoutes.js';
 import restauranteConfigRoutes from './routes/restauranteConfigRoutes.js';
 import restauranteMenuRoutes from './routes/restauranteMenuRoutes.js';
+import carrinhoRoutes from './routes/carrinhoRoutes.js';
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/api', pagamentosRoutes);
 app.use('/api', restaurantePedidosRoutes);
 app.use('/api', restauranteConfigRoutes);
 app.use('/api', restauranteMenuRoutes);
+app.use('/api', carrinhoRoutes);
 
 app.get('/', (req, res) => {
   res.send('API Sabor Comida funcionando 🍔');

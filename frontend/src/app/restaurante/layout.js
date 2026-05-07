@@ -32,7 +32,16 @@ export default function RestauranteLayout({ children }) {
       try {
         const restaurantResponse = await getMyRestaurant(session.token);
 
-        const status = (restaurantResponse.statusAprovacao ?? restaurantResponse.restaurante?.statusAprovacao ?? restaurantResponse.restaurante?.status_aprovacao ?? restaurantResponse.status_aprovacao ?? '').toLowerCase();
+        const status = (
+          restaurantResponse.statusAprovacao ?? 
+          restaurantResponse.restaurante?.statusAprovacao ?? 
+          restaurantResponse.restaurante?.status_aprovacao ?? 
+          restaurantResponse.status_aprovacao ?? 
+          ''
+        ).toLowerCase();
+
+        console.log("RESPONSE COMPLETA:", restaurantResponse);
+        console.log("STATUS:", status);
 
         const updatedSession = { ...session, restaurante: restaurantResponse.restaurante ?? session.restaurante };
         saveAuthSession(updatedSession);
