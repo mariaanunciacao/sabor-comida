@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from 'next/dynamic';
 import Link from "next/link";
 import Image from "next/image";
 import { getMyRestaurant, getRestaurantImage, updateMyRestaurant } from "../../../lib/api";
 import { loadAuthSession } from "../../../lib/session";
 import { MdOutlinePhotoCamera, MdOutlineSchedule, MdOutlineBusiness, MdOutlineDescription, MdOutlineSave, MdOutlinePlace, MdOutlineMap, MdOutlineLocationOn } from "react-icons/md";
+
+const MapPicker = dynamic(() => import("../../../components/MapPicker"), { ssr: false });
 
 const fields = [
   { title: 'Identificação', description: 'Nome do restaurante, CNPJ e descrição pública.', icon: MdOutlineBusiness },
@@ -18,6 +21,7 @@ const addressFields = [
   { label: 'Logradouro', key: 'logradouro', placeholder: 'Rua, avenida, travessa...' },
   { label: 'Número', key: 'numero', placeholder: '123' },
   { label: 'CEP', key: 'cep', placeholder: '00000-000' },
+  { label: 'Bairro', key: 'bairro', placeholder: 'Bairro' },
   { label: 'Cidade', key: 'cidade', placeholder: 'São Paulo' },
   { label: 'Estado', key: 'estado', placeholder: 'SP' },
 ];
@@ -49,6 +53,9 @@ export default function Page() {
     logradouro: '',
     numero: '',
     cep: '',
+    bairro: '',
+    latitude: '',
+    longitude: '',
     cidade: '',
     estado: '',
   });
@@ -82,8 +89,11 @@ export default function Page() {
           logradouro: restaurant.restaurante?.enderecoPrincipal?.logradouro ?? restaurant.enderecoPrincipal?.logradouro ?? '',
           numero: restaurant.restaurante?.enderecoPrincipal?.numero ?? restaurant.enderecoPrincipal?.numero ?? '',
           cep: restaurant.restaurante?.enderecoPrincipal?.cep ?? restaurant.enderecoPrincipal?.cep ?? '',
+          bairro: restaurant.restaurante?.enderecoPrincipal?.bairro ?? restaurant.enderecoPrincipal?.bairro ?? '',
           cidade: restaurant.restaurante?.enderecoPrincipal?.cidade ?? restaurant.enderecoPrincipal?.cidade ?? '',
           estado: restaurant.restaurante?.enderecoPrincipal?.estado ?? restaurant.enderecoPrincipal?.estado ?? '',
+          latitude: restaurant.restaurante?.enderecoPrincipal?.latitude ?? restaurant.enderecoPrincipal?.latitude ?? '',
+          longitude: restaurant.restaurante?.enderecoPrincipal?.longitude ?? restaurant.enderecoPrincipal?.longitude ?? '',
         });
 
         if (!restaurant.restaurante) {
@@ -98,6 +108,44 @@ export default function Page() {
 
     loadRestaurant();
   }, []);
+
+  async function handleCepLookup(cepRaw) {
+    const cep = String(cepRaw || formData.cep).replace(/\D/g, '');
+    if (!cep || cep.length !== 8) return;
+
+    try {
+      const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await resp.json();
+
+      if (data.erro) {
+        setMessage('CEP não encontrado.');
+        return;
+      }
+
+      setFormData((current) => ({
+        ...current,
+        logradouro: data.logradouro ?? current.logradouro,
+        bairro: data.bairro ?? current.bairro,
+        cidade: data.localidade ?? current.cidade,
+        estado: data.uf ?? current.estado,
+        cep: data.cep ?? current.cep,
+      }));
+
+      // optional: geocode via Nominatim to get approximate lat/lon
+      try {
+        const q = encodeURIComponent(`${data.logradouro ?? ''}, ${data.localidade ?? data.uf ?? ''} Brasil`);
+        const nom = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${q}`, { headers: { 'User-Agent': 'sabor-comida-app' } });
+        const nomJson = await nom.json();
+        if (nomJson && nomJson[0]) {
+          setFormData((current) => ({ ...current, latitude: nomJson[0].lat, longitude: nomJson[0].lon }));
+        }
+      } catch (e) {
+        // ignore geocode errors
+      }
+    } catch (error) {
+      setMessage('Erro ao consultar CEP.');
+    }
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -125,6 +173,9 @@ export default function Page() {
         cep: formData.cep,
         cidade: formData.cidade,
         estado: formData.estado,
+        bairro: formData.bairro,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
       });
 
       setRestaurantId(response.restaurante?.id ?? restaurantId);
@@ -222,8 +273,25 @@ export default function Page() {
                   value={formData[field.key]}
                   onChange={(value) => setFormData((current) => ({ ...current, [field.key]: value }))}
                   placeholder={field.placeholder}
+                  onBlur={field.key === 'cep' ? () => handleCepLookup() : undefined}
                 />
               ))}
+            </div>
+
+            <div className="mt-4">
+              <label className="mb-2 block text-sm font-medium text-gray-700">Localização no mapa</label>
+              <MapPicker
+                initialPosition={[
+                  formData.latitude ? Number(formData.latitude) : -14.2350,
+                  formData.longitude ? Number(formData.longitude) : -51.9253,
+                ]}
+                initialZoom={formData.latitude ? 15 : 4}
+                onChange={({ latitude, longitude }) => setFormData((current) => ({ ...current, latitude, longitude }))}
+              />
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <input value={formData.latitude} onChange={(e) => setFormData((c) => ({ ...c, latitude: e.target.value }))} placeholder="Latitude" className="w-full rounded-2xl border border-orange-100 px-3 py-2" />
+                <input value={formData.longitude} onChange={(e) => setFormData((c) => ({ ...c, longitude: e.target.value }))} placeholder="Longitude" className="w-full rounded-2xl border border-orange-100 px-3 py-2" />
+              </div>
             </div>
           </div>
 
@@ -284,13 +352,14 @@ export default function Page() {
   );
 }
 
-function InputField({ label, value, onChange, placeholder }) {
+function InputField({ label, value, onChange, placeholder, onBlur }) {
   return (
     <div>
       <label className="mb-2 block text-sm font-medium text-gray-700">{label}</label>
       <input
         value={value}
         onChange={(event) => onChange(event.target.value)}
+        onBlur={onBlur}
         placeholder={placeholder}
         className="w-full rounded-2xl border border-orange-100 bg-white px-4 py-3 text-gray-700 shadow-sm outline-none transition focus:border-[color:var(--color-botao-pesquisa)] focus:ring-2 focus:ring-[color:var(--color-botao-pesquisa)]/20"
       />
