@@ -95,20 +95,28 @@ export default function Page() {
             </div>
 
             <div className="container mx-auto grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-4">
-              {section.items.map((item) => (
+              {section.items.map((item, idx) => (
                 <article
-                  key={item.id}
+                  key={`${item.restaurantId ?? 'r'}-${item.id ?? idx}`}
                   className="group overflow-hidden rounded-[1.5rem] border border-white/80 bg-white/85 shadow-[0_14px_40px_rgba(249,115,22,0.12)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(245,128,103,0.24)]"
                 >
                   <div className="relative h-48 overflow-hidden">
-                    <Image
-                      className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
-                      src={item.image}
-                      alt={item.name}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                      unoptimized
-                    />
+                    {(() => {
+                      const imgSrc = item.image ?? item.imagem ?? item.foto ?? item.imagemUrl ?? item.imageUrl ?? '';
+                      const safeSrc = imgSrc || '/images/default.png';
+                      const safeAlt = item.name || item.titulo || item.title || 'Produto';
+
+                      return (
+                        <Image
+                          className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                          src={safeSrc}
+                          alt={safeAlt}
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                          unoptimized
+                        />
+                      );
+                    })()}
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/0 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
 

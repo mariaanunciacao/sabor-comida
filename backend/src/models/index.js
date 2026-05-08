@@ -23,6 +23,7 @@ import Favorito from './FavoritoModel.js';
 import Avaliacao from './AvaliacaoModel.js';    
 import RecuperacaoSenha from './RecuperacaoSenhaModel.js';
 import ItemCarrinho from './ItemCarrinhoModel.js';
+import ItemPedido from "./ItemPedidoModel.js";
 
 function hashPassword(password) {
     return bcrypt.hashSync(String(password), 10);
@@ -346,6 +347,7 @@ export {
     RecuperacaoSenha,
     UsuarioPerfil,
     ItemCarrinho,
+    ItemPedido,
 };
 
 export async function initializeModels() {

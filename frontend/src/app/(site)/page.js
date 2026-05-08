@@ -60,8 +60,14 @@ export default function Home() {
         alert('Usuário não encontrado na sessão.');
         return;
       }
-
-      await addToCartCommerce(token, usuarioId, item.restaurantId, item.productId, 1);
+      console.log(item);
+      await addToCartCommerce(
+        token,
+        usuarioId,
+        item.restaurantId,
+        item.productId,
+        1
+      );
 
         // navegar para a página do carrinho
         router.push('/carrinho');

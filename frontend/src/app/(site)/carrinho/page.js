@@ -101,7 +101,12 @@ export default function Page() {
 
             <div className="flex gap-2">
               <button onClick={handleClear} className="rounded-xl bg-gray-200 px-4 py-2">Limpar carrinho</button>
-              <button onClick={() => alert('Implementar checkout')} className="rounded-xl bg-(--color-botao-pedir-agora) px-4 py-2 text-white">Finalizar pedido</button>
+              <button
+                onClick={() => router.push('/checkout')}
+                className="rounded-xl bg-(--color-botao-pedir-agora) px-4 py-2 text-white"
+              >
+                Finalizar pedido
+              </button>
             </div>
           </div>
         )}
